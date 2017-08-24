@@ -8,84 +8,12 @@
         android:id="@+id/create_toolbar"
         layout="@layout/create_toolbar" />
 
-    <EditText
-        android:id="@+id/edt_note_title"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/create_toolbar"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@android:color/transparent"
-        android:ellipsize="end"
-        android:gravity="start|center_vertical"
-        android:hint="@string/new_note_title_hint"
-        android:maxLines="1"
-        android:textColor="@color/grey_900"
-        android:textSize="20sp" />
-
-    <TableRow
-        android:id="@+id/tbr_setting"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/edt_note_title"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:weightSum="8">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="6"
-            android:gravity="center_vertical"
-            android:text="@string/tbr_name"
-            android:textSize="18sp"
-            android:textStyle="bold" />\
-
-
-        <com.k3mshiro.k3mnotes.customview.SquareButton
-            android:id="@+id/btn_alarm_set"
-            android:layout_width="0dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@drawable/ic_alarm_on_grey_600_48dp" />
-
-        <com.k3mshiro.k3mnotes.customview.SquareButton
-            android:id="@+id/btn_info_look"
-            android:layout_width="0dp"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@drawable/ic_info_grey_600_48dp" />
-    </TableRow>
-
     <include
-        android:id="@+id/color_set_bar"
-        layout="@layout/color_bar_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tbr_setting"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/edt_note_content"
+        android:id="@+id/edit_size"
+        layout="@layout/layout_edit_side"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/color_set_bar"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@android:color/transparent"
-        android:gravity="start"
-        android:hint="@string/new_note_content_hint"
-        android:textColor="@color/grey_900"
-        android:textSize="16sp" />
-
+        android:layout_below="@id/create_toolbar" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_edit_note"

@@ -31,6 +31,8 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     public static final CharSequence BLUE = "blue";
     public static final CharSequence INDIGO = "indigo";
     public static final CharSequence VIOLET = "violet";
+    private static final CharSequence ALARM_SET_BTN = "ALARM_SET_BTN";
+    private static final CharSequence INFO_LOOK_BTN = "INFO_LOOK_BTN";
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
 
@@ -61,10 +63,15 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_check_red_800_24dp);
 
-        btnAlarmSet = (Button) findViewById(R.id.btn_alarm_set);
-        btnInfoLook = (Button) findViewById(R.id.btn_info_look);
+        View editSide = findViewById(R.id.edit_size);
 
-        View colorSetBar = findViewById(R.id.color_set_bar);
+        btnAlarmSet = (Button) editSide.findViewById(R.id.btn_alarm_set);
+        btnAlarmSet.setContentDescription(ALARM_SET_BTN);
+
+        btnInfoLook = (Button) editSide.findViewById(R.id.btn_info_look);
+        btnAlarmSet.setContentDescription(INFO_LOOK_BTN);
+
+        View colorSetBar = editSide.findViewById(R.id.color_set_bar);
 
         btnRed = (Button) colorSetBar.findViewById(R.id.btn_red);
         btnRed.setContentDescription(RED);
@@ -87,13 +94,14 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         btnViolet = (Button) colorSetBar.findViewById(R.id.btn_violet);
         btnViolet.setContentDescription(VIOLET);
 
-        edtTitle = (EditText) findViewById(R.id.edt_note_title);
-        edtContent = (EditText) findViewById(R.id.edt_note_content);
+        edtTitle = (EditText) editSide.findViewById(R.id.edt_note_title);
+        edtContent = (EditText) editSide.findViewById(R.id.edt_note_content);
+
         fabEditNote = (FloatingActionButton) findViewById(R.id.fab_edit_note);
+        fabEditNote.setVisibility(View.GONE);
 
         btnAlarmSet.setOnClickListener(this);
         btnInfoLook.setOnClickListener(this);
-        fabEditNote.setOnClickListener(this);
 
         btnRed.setOnClickListener(this);
         btnOrange.setOnClickListener(this);
@@ -140,8 +148,6 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_alarm_set:
                 break;
             case R.id.btn_info_look:
-                break;
-            case R.id.fab_edit_note:
                 break;
             default:
                 break;
