@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/listNote_act"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_200">
+
+    <include
+        android:id="@+id/list_toolbar"
+        layout="@layout/list_toolbar" />
+
+    <com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport
+        android:id="@+id/cardList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/list_toolbar"
+        android:layout_margin="@dimen/activity_horizontal_margin" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginRight="24dp"
+        android:src="@drawable/ic_add_white_48dp"
+        app:backgroundTint="@color/amber_A700" />
+
+    <include layout="@layout/fab_layout" />
+
+</RelativeLayout>
