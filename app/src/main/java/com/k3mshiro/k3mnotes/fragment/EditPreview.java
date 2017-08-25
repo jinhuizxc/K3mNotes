@@ -22,10 +22,11 @@ public class EditPreview extends Fragment {
         view = inflater.inflate(R.layout.activity_create_note, container, false);
         initNote();
         initViews();
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 
     private void initNote() {
+
     }
 
     private void initViews() {

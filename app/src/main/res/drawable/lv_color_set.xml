@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/ic_color_lens_red_500_48dp"
+        android:maxLevel="0"
+        android:minLevel="0" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_orange_500_48dp"
+        android:maxLevel="1"
+        android:minLevel="1" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_yellow_a400_48dp"
+        android:maxLevel="2"
+        android:minLevel="2" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_green_500_48dp"
+        android:maxLevel="3"
+        android:minLevel="3" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_blue_500_48dp"
+        android:maxLevel="4"
+        android:minLevel="4" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_indigo_500_48dp"
+        android:maxLevel="5"
+        android:minLevel="5" />
+
+    <item
+        android:drawable="@drawable/ic_color_lens_purple_500_48dp"
+        android:maxLevel="6"
+        android:minLevel="6" />
+
+</level-list>

@@ -17,7 +17,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:paddingLeft="8dp"
+            android:paddingLeft="@dimen/activity__horizontal_padding"
+            android:paddingRight="@dimen/activity__horizontal_padding"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:typeface="monospace" />
@@ -30,7 +31,8 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:paddingLeft="4dp"
+            android:paddingLeft="@dimen/activity__horizontal_padding"
+            android:paddingRight="@dimen/activity__horizontal_padding"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -41,7 +43,8 @@
             android:layout_weight="3"
             android:ellipsize="end"
             android:maxLines="3"
-            android:paddingLeft="4dp"
+            android:paddingLeft="@dimen/activity__horizontal_padding"
+            android:paddingRight="@dimen/activity__horizontal_padding"
             android:paddingTop="4dp"
             android:textSize="12sp" />
     </LinearLayout>
