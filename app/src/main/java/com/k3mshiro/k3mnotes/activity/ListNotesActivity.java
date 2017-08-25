@@ -38,6 +38,8 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     private static final int REQUEST_CODE_PERMISSIONS = 100;
     private static final int VERTICAL_ITEM_SPACE = 30;
     public static final int REQUEST_CODE_CREATE = 101;
+    public static final String EDIT_NOTE = "EDIT_NOTE";
+    public static final int REQUEST_CODE_EDIT = 102;
 
     private Toolbar listToolbar;
     private RecyclerViewEmptySupport rvList;
@@ -178,7 +180,7 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
                         break;
                     case ItemTouchHelper.RIGHT:
                         //Edit swiped item from list and notify the RecyclerView
-                        deleteNote(position);
+                        editNote(position);
                     default:
                         break;
                 }
@@ -199,12 +201,19 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
                     Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case REQUEST_CODE_EDIT:
+                if (resultCode == CreateNoteActivity.RESULT_CODE_SUCCESS) {
+                    mNoteAdapter.notifyDataSetChanged();
+                } else if (resultCode == CreateNoteActivity.RESULT_CODE_FAILURE) {
+                    Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
     @Override
     public void onItemClick(View itemView, int position) {
-        editNote();
+        editNote(position);
     }
 
     @Override
@@ -260,8 +269,11 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         startActivityForResult(intentCreate, ListNotesActivity.REQUEST_CODE_CREATE);
     }
 
-    private void editNote() {
-
+    private void editNote(int position) {
+        NoteDTO editNote = noteDTOs.get(position);
+        Intent intentEdit = new Intent(ListNotesActivity.this, EditNoteActivity.class);
+        intentEdit.putExtra(EDIT_NOTE, editNote);
+        startActivityForResult(intentEdit, ListNotesActivity.REQUEST_CODE_EDIT);
     }
 
     private void deleteNote(int position) {

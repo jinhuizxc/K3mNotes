@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,15 +37,8 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     public static final CharSequence INFO_LOOK_BTN = "INFO_LOOK_BTN";
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
-    private static final int LEVEL_RED = 0;
-    private static final int LEVEL_ORANGE = 1;
-    private static final int LEVEL_YELLOW = 2;
-    private static final int LEVEL_GREEN = 3;
-    private static final int LEVEL_BLUE = 4;
-    private static final int LEVEL_INDIGO = 5;
-    private static final int LEVEL_VIOLET = 6;
 
-    private View editSide, colorPanel;
+    private View colorPanel;
     private Button btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow, btnGreen, btnBlue, btnIndigo, btnViolet;
     private ImageView ivColorSet;
     private FloatingActionButton fabEditNote;
@@ -53,6 +47,8 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
 
     private NoteDAO noteDAO;
     private String parseColor = "#4CAF50";
+    private Intent intent;
+    private NoteDTO editedNote;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +56,29 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_create_note);
         initViews();
         initNotes();
+    }
+
+    private void getData() {
+        editedNote = (NoteDTO) intent.getSerializableExtra(ListNotesActivity.EDIT_NOTE);
+        edtTitle.setText(editedNote.getTitle());
+        parseColor = editedNote.getColor();
+        edtTitle.setTextColor(Color.parseColor(parseColor));
+        edtContent.setText(editedNote.getContent());
+        if (parseColor.compareTo("#F44336") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
+        } else if (parseColor.compareTo("#FB8C00") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
+        } else if (parseColor.compareTo("#FFEA00") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
+        } else if (parseColor.compareTo("#4CAF50") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
+        } else if (parseColor.compareTo("#2196F3") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
+        } else if (parseColor.compareTo("#3F51B5") == 0) {
+            ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
+        } else {
+            ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
+        }
     }
 
     private void initViews() {
@@ -73,7 +92,7 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_check_red_800_24dp);
 
-        editSide = findViewById(R.id.edit_size);
+        View editSide = findViewById(R.id.edit_size);
 
         btnAlarmSet = (Button) editSide.findViewById(R.id.btn_alarm_set);
         btnAlarmSet.setContentDescription(ALARM_SET_BTN);
@@ -86,13 +105,13 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         edtContent = (EditText) editSide.findViewById(R.id.edt_note_content);
 
         fabEditNote = (FloatingActionButton) findViewById(R.id.fab_edit_note);
-        fabEditNote.setVisibility(View.GONE);
+        fabEditNote.setOnClickListener(this);
 
         btnAlarmSet.setOnClickListener(this);
         btnInfoLook.setOnClickListener(this);
 
         ivColorSet = (ImageView) editSide.findViewById(R.id.iv_color_fill);
-        ivColorSet.setImageLevel(3);
+        ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
         ivColorSet.setOnClickListener(this);
 
         colorPanel = editSide.findViewById(R.id.color_panel);
@@ -160,6 +179,11 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.fab_edit_note:
+                edtContent.requestFocus();
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(CreateNoteActivity.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(edtContent, InputMethodManager.SHOW_IMPLICIT);
+                break;
             case R.id.btn_alarm_set:
                 break;
             case R.id.btn_info_look:
@@ -173,44 +197,37 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
 
         if (v.getContentDescription() == RED) {
             parseColor = "#F44336";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_RED);
+            ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == ORANGE) {
             parseColor = "#FB8C00";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_ORANGE);
+            ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == YELLOW) {
             parseColor = "#FFEA00";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_YELLOW);
+            ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == GREEN) {
             parseColor = "#4CAF50";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_GREEN);
+            ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == BLUE) {
             parseColor = "#2196F3";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_BLUE);
+            ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == INDIGO) {
             parseColor = "#3F51B5";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_INDIGO);
+            ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
             hideColoBar();
 
         } else if (v.getContentDescription() == VIOLET) {
             parseColor = "#9C27B0";
-            edtTitle.setTextColor(Color.parseColor(parseColor));
-            ivColorSet.setImageLevel(LEVEL_VIOLET);
+            ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
             hideColoBar();
         }
     }
@@ -225,6 +242,7 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
 
     private void hideColoBar() {
         colorPanel.setVisibility(View.INVISIBLE);
+        edtTitle.setTextColor(Color.parseColor(parseColor));
         edtTitle.setEnabled(true);
         edtContent.setEnabled(true);
         btnAlarmSet.setEnabled(true);
@@ -243,14 +261,28 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         NoteDTO newNote = new NoteDTO(title, date, content, color);
         boolean result = noteDAO.createNewNote(newNote);
 
-        Intent intent = new Intent(CreateNoteActivity.this, ListNotesActivity.class);
-
         if (result) {
             setResult(RESULT_CODE_SUCCESS);
         } else {
             setResult(RESULT_CODE_FAILURE);
         }
-        finish();
+    }
+
+    private void editNote() {
+        editedNote.setTitle(edtTitle.getText().toString());
+        editedNote.setContent(edtContent.getText().toString());
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String date = dateFormat.format(c.getTime()).toString();
+        editedNote.setDate(date);
+        editedNote.setColor(parseColor);
+
+        boolean result = noteDAO.editNote(editedNote);
+        if (result) {
+            setResult(RESULT_CODE_SUCCESS);
+        } else {
+            setResult(RESULT_CODE_FAILURE);
+        }
     }
 
     @Override

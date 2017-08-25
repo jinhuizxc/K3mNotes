@@ -22,7 +22,12 @@
 
         <activity
             android:name=".activity.CreateNoteActivity"
-            android:parentActivityName=".activity.ListNotesActivity"></activity>
+            android:parentActivityName=".activity.ListNotesActivity" />
+
+        <activity
+            android:name=".activity.EditNoteActivity"
+            android:parentActivityName=".activity.ListNotesActivity" />
+
 
     </application>
 
