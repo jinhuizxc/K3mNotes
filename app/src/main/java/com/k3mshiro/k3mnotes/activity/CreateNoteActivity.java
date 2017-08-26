@@ -37,6 +37,7 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     public static final CharSequence INFO_LOOK_BTN = "INFO_LOOK_BTN";
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
+    private static final String CREATE_NOTE_OBJ = "CREATE_NOTE_OBJ";
 
     private View colorPanel;
     private Button btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow, btnGreen, btnBlue, btnIndigo, btnViolet;
@@ -261,23 +262,6 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         NoteDTO newNote = new NoteDTO(title, date, content, color);
         boolean result = noteDAO.createNewNote(newNote);
 
-        if (result) {
-            setResult(RESULT_CODE_SUCCESS);
-        } else {
-            setResult(RESULT_CODE_FAILURE);
-        }
-    }
-
-    private void editNote() {
-        editedNote.setTitle(edtTitle.getText().toString());
-        editedNote.setContent(edtContent.getText().toString());
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String date = dateFormat.format(c.getTime()).toString();
-        editedNote.setDate(date);
-        editedNote.setColor(parseColor);
-
-        boolean result = noteDAO.editNote(editedNote);
         if (result) {
             setResult(RESULT_CODE_SUCCESS);
         } else {

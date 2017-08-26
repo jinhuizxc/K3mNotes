@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
@@ -47,12 +49,14 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     private FloatingActionButton fabNewNote;
     private FloatingActionButton fabNewPhoto;
     private FloatingActionButton fabNewAlarm;
-
+    private RelativeLayout rltLayout;
 
     private NoteAdapter mNoteAdapter;
     private List<NoteDTO> noteDTOs;
     private NoteDAO noteDAO;
     private boolean isFloatingActionButtonShow = false;
+    private NoteDTO deletedNote;
+    private int deletePos;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +105,8 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     }
 
     private void initViews() {
+        rltLayout = (RelativeLayout) findViewById(R.id.listNote_act);
+
         listToolbar = (Toolbar) findViewById(R.id.list_toolbar);
         setSupportActionBar(listToolbar);
 
@@ -151,12 +157,10 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
                 int position = viewHolder.getAdapterPosition();
                 switch (swipeDirection) {
                     case ItemTouchHelper.LEFT:
-                        //Remove swiped item from list and notify the RecyclerView
                         deleteNote(position);
                         break;
                     case ItemTouchHelper.RIGHT:
-                        //Edit swiped item from list and notify the RecyclerView
-                        editNote(position);
+                        deleteNote(position);
                     default:
                         break;
                 }
@@ -275,15 +279,19 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     }
 
     private void deleteNote(int position) {
-        NoteDTO deletedNote = noteDTOs.get(position);
-        boolean result = noteDAO.deleteNote(deletedNote);
-        noteDTOs.remove(position);
-        if (result == true) {
-            mNoteAdapter.notifyItemRemoved(position);
-            Toasty.success(this, "Delete Successfully!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toasty.error(this, "Delete Failed!", Toast.LENGTH_SHORT).show();
-        }
+        deletedNote = noteDTOs.get(position);
+        deletePos = position;
+        noteDAO.deleteNote(deletedNote);
+        mNoteAdapter.deleteNote(position);
+        Snackbar.make(rltLayout, "1 item has been deleted", Snackbar.LENGTH_LONG)
+                .setAction("Undo", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        noteDTOs.add(deletePos, deletedNote);
+                        noteDAO.createNewNote(deletedNote);
+                        mNoteAdapter.notifyItemInserted(deletePos);
+                    }
+                }).show();
     }
 
     /***************** Animation Setting **********************************/

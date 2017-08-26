@@ -76,4 +76,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             });
         }
     }
+
+    public void addNote(NoteDTO newNote) {
+        mNoteDTOs.add(newNote);
+        notifyItemInserted(mNoteDTOs.size());
+    }
+
+    public void deleteNote(int position) {
+        mNoteDTOs.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mNoteDTOs.size());
+    }
+
+    public void editNote(int position) {
+        notifyItemChanged(position);
+    }
 }
