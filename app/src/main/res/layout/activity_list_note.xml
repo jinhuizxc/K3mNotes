@@ -10,6 +10,13 @@
         android:id="@+id/list_toolbar"
         layout="@layout/list_toolbar" />
 
+    <include
+        android:id="@+id/list_empty_view"
+        layout="@layout/list_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/list_toolbar" />
+
     <com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport
         android:id="@+id/cardList"
         android:layout_width="match_parent"

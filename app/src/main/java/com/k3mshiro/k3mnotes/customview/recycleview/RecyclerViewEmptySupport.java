@@ -27,7 +27,6 @@ public class RecyclerViewEmptySupport extends RecyclerView {
         }
     };
 
-
     public RecyclerViewEmptySupport(Context context) {
         super(context);
     }

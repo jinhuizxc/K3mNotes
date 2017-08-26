@@ -93,30 +93,11 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.item_settings:
-                break;
-            case R.id.item_about:
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void initializeComponents() {
         setContentView(R.layout.activity_list_note);
-        initViews();
         initNotes();
+        initViews();
+        initSwipe();
     }
 
     private void initViews() {
@@ -124,12 +105,11 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         setSupportActionBar(listToolbar);
 
         rvList = (RecyclerViewEmptySupport) findViewById(R.id.cardList);
-        //rvList.setEmptyView(view.findViewById(R.id.list_empty_view));
+        rvList.setEmptyView(findViewById(R.id.list_empty_view));
         LinearLayoutManager llm = new LinearLayoutManager(ListNotesActivity.this, LinearLayoutManager.VERTICAL, false);
         rvList.setLayoutManager(llm);
         rvList.setHasFixedSize(true); // nang cao hieu suat khi cac item cung do rong va chieu cao
-        //add ItemDecoration - them khoang cach
-        rvList.addItemDecoration(new VerticalItemSpace(VERTICAL_ITEM_SPACE));
+        rvList.addItemDecoration(new VerticalItemSpace(VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
         /* them divider
         rvList.addItemDecoration(new DividerItem(this));
         //or
@@ -140,25 +120,21 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
         fabNewAlarm = (FloatingActionButton) findViewById(R.id.fab_new_alarm);
         fabNewPhoto = (FloatingActionButton) findViewById(R.id.fab_new_photo);
-
         fab.setOnClickListener(this);
         fabNewNote.setOnClickListener(this);
         fabNewAlarm.setOnClickListener(this);
         fabNewPhoto.setOnClickListener(this);
+
+        rvList.setAdapter(mNoteAdapter);
     }
 
     private void initNotes() {
         noteDAO = new NoteDAO(this);
         noteDAO.openDatabase();
         noteDTOs = noteDAO.getListNotes();
-
         mNoteAdapter = new NoteAdapter(ListNotesActivity.this, noteDTOs);
-        rvList.setAdapter(mNoteAdapter);
-
         mNoteAdapter.setOnItemClickListener(this);
         mNoteAdapter.notifyDataSetChanged();
-
-        initSwipe();
 
     }
 
@@ -188,6 +164,26 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(rvList);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.item_settings:
+                break;
+            case R.id.item_about:
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -263,6 +259,8 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
                 break;
         }
     }
+
+    /***************** Add, Remove, Edit **********************************/
 
     private void showCreateNoteScreen() {
         Intent intentCreate = new Intent(ListNotesActivity.this, CreateNoteActivity.class);
