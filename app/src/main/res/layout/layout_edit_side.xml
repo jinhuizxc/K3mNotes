@@ -42,18 +42,28 @@
                 android:id="@+id/textView"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="5"
+                android:layout_weight="3"
                 android:gravity="center_vertical"
                 android:text="@string/tbr_name"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/btn_priority_set"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:background="@android:color/transparent"
+                android:text="None"
+                android:textAllCaps="false"
+                android:textColor="@color/blue_500"
+                android:textSize="14sp" />
+
             <com.k3mshiro.k3mnotes.customview.SquareImageView
                 android:id="@+id/iv_color_fill"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_color_lens_white_48dp"
-                android:padding="4dp" />
+                android:padding="4dp"
+                android:src="@drawable/ic_color_lens_white_48dp" />
 
             <com.k3mshiro.k3mnotes.customview.SquareButton
                 android:id="@+id/btn_alarm_set"
@@ -88,5 +98,10 @@
     <include
         android:id="@+id/color_panel"
         layout="@layout/color_bar_layout"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/priority_panel"
+        layout="@layout/priority_bar_layout"
         android:visibility="invisible" />
 </RelativeLayout>

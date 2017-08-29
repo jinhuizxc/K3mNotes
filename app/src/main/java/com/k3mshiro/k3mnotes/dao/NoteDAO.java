@@ -106,6 +106,8 @@ public class NoteDAO {
         contentValues.put(Database.COLUMN_NOTE_DATE, editedNote.getDate());
         contentValues.put(Database.COLUMN_NOTE_CONTENT, editedNote.getContent());
         contentValues.put(Database.COLUMN_NOTE_COLOR, editedNote.getColor());
+        contentValues.put(Database.COLUMN_MODIFIED_DATE, editedNote.getModifiedDate());
+        contentValues.put(Database.COLUMN_NOTE_PRIORITY, editedNote.getPriority());
 
         int result = mSQLiteDB.update(Database.TABLE_NOTE,
                 contentValues,

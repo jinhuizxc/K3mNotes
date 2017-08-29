@@ -12,8 +12,8 @@
 
         <Button
             android:id="@+id/btn_drawer_back"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/ic_arrow_back_red_700_48dp" />
@@ -73,14 +73,14 @@
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
             android:text="@string/lbl_color"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/iv_color"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_below="@id/iv_divider_date"
-            android:layout_marginStart="40dp"
+            android:layout_marginStart="25dp"
             android:layout_marginTop="15dp"
             android:layout_toEndOf="@id/tv_color_info" />
 

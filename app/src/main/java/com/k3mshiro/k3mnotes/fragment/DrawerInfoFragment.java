@@ -1,6 +1,7 @@
 package com.k3mshiro.k3mnotes.fragment;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -41,7 +42,7 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
         createdDate = bundle.getString(KEY_CREATED_DATE, null);
         modifiedDate = bundle.getString(KEY_MODIFIED_DATE, null);
         parseColor = bundle.getString(KEY_COLOR, "#4CAF50");
-        priority = bundle.getInt(KEY_CREATED_DATE, 0);
+        priority = bundle.getInt(KEY_PRIORITY);
     }
 
     private void initViews() {
@@ -73,15 +74,19 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
         switch (priority) {
             case 0:
                 tvPriority.setText("None");
+                tvPriority.setTextColor(Color.parseColor("#2196F3"));
                 break;
             case 1:
                 tvPriority.setText("Low");
+                tvPriority.setTextColor(Color.parseColor("#4CAF50"));
                 break;
             case 2:
                 tvPriority.setText("Medium");
+                tvPriority.setTextColor(Color.parseColor("#FFEA00"));
                 break;
             case 3:
                 tvPriority.setText("High");
+                tvPriority.setTextColor(Color.parseColor("#FB8C00"));
                 break;
             default:
                 break;
