@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_800_trans">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="60dp"
+        android:background="@android:color/white">
+
+        <Button
+            android:id="@+id/btn_drawer_back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_arrow_back_red_700_48dp" />
+
+        <TextView
+            android:id="@+id/tv_label_createdDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/lbl_created_date"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_content_createdDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_label_createdDate"
+            android:layout_marginStart="60dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_label_modifiedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_content_createdDate"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/lbl_modified_date"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_content_modifiedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_label_modifiedDate"
+            android:layout_marginStart="60dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_divider_date"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/tv_content_modifiedDate"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/divider_shape" />
+
+        <TextView
+            android:id="@+id/tv_color_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_divider_date"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/lbl_color"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_color"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/iv_divider_date"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="15dp"
+            android:layout_toEndOf="@id/tv_color_info" />
+
+        <ImageView
+            android:id="@+id/iv_divider_color"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/tv_color_info"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/divider_shape" />
+
+        <TextView
+            android:id="@+id/tv_label_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_divider_color"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/lbl_priority"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_content_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_divider_color"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@id/tv_label_priority"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+</RelativeLayout>

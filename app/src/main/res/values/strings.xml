@@ -10,4 +10,14 @@
     <string name="menu_create_delete">Delete</string>
     <string name="menu_create_statistics">Statistics</string>
     <string name="no_to_dos">You don\'t have any notes</string>
+    <string name="lbl_modified_date">Modified Date:</string>
+    <string name="lbl_created_date">Created Date:</string>
+    <string name="lbl_color">Color:</string>
+    <string name="lbl_priority">Priority :</string>
+
+    <string-array name="spinner_items">
+        <item>Modified Date</item>
+        <item>Priority</item>
+    </string-array>
+
 </resources>

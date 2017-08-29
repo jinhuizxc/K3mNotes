@@ -2,6 +2,7 @@ package com.k3mshiro.k3mnotes.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,7 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,8 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
@@ -34,7 +40,8 @@ import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.util.List;
 
-public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.OnItemClickListener, View.OnClickListener {
+public class ListNotesActivity extends AppCompatActivity implements
+        View.OnClickListener, AdapterView.OnItemSelectedListener, NoteAdapter.OnItemClickListener {
 
     private static final String TAG = ListNotesActivity.class.getName();
     private static final int REQUEST_CODE_PERMISSIONS = 100;
@@ -42,6 +49,10 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     public static final int REQUEST_CODE_CREATE = 101;
     public static final String EDIT_NOTE = "EDIT_NOTE";
     public static final int REQUEST_CODE_EDIT = 102;
+    private static final String SHARED_PREF_VIEW_MODE = "SHARED_PREF_VIEW_MODE";
+    private static final String ALL_MODE = "ALL_MODE";
+    private static final String MODIFIED_DATE_MODE = "MODIFIED_DATE_MODE";
+    private static final String PRIORIRY_MODE = "PRIORIRY_MODE";
 
     private Toolbar listToolbar;
     private RecyclerViewEmptySupport rvList;
@@ -50,13 +61,16 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     private FloatingActionButton fabNewPhoto;
     private FloatingActionButton fabNewAlarm;
     private RelativeLayout rltLayout;
+    private Spinner mSpinner;
+    private SharedPreferences sharedPreferences;
+    private SortedList<NoteDTO> sortedNotes;
 
     private NoteAdapter mNoteAdapter;
     private List<NoteDTO> noteDTOs;
     private NoteDAO noteDAO;
     private boolean isFloatingActionButtonShow = false;
-    private NoteDTO deletedNote;
-    private int deletePos;
+    private NoteDTO deletedNote, editedNote;
+    private int editPos;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,11 +118,29 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         initSwipe();
     }
 
+    private void initNotes() {
+        noteDAO = new NoteDAO(this);
+        noteDAO.openDatabase();
+        noteDTOs = noteDAO.getListNotes();
+        mNoteAdapter = new NoteAdapter(ListNotesActivity.this);
+        mNoteAdapter.addAll(noteDTOs);
+        mNoteAdapter.setOnItemClickListener(this);
+    }
+
     private void initViews() {
         rltLayout = (RelativeLayout) findViewById(R.id.listNote_act);
 
         listToolbar = (Toolbar) findViewById(R.id.list_toolbar);
         setSupportActionBar(listToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        mSpinner = (Spinner) listToolbar.findViewById(R.id.spinner_nav);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.spinner_items, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(adapter);
+        mSpinner.setOnItemSelectedListener(this);
 
         rvList = (RecyclerViewEmptySupport) findViewById(R.id.cardList);
         rvList.setEmptyView(findViewById(R.id.list_empty_view));
@@ -132,16 +164,6 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         fabNewPhoto.setOnClickListener(this);
 
         rvList.setAdapter(mNoteAdapter);
-    }
-
-    private void initNotes() {
-        noteDAO = new NoteDAO(this);
-        noteDAO.openDatabase();
-        noteDTOs = noteDAO.getListNotes();
-        mNoteAdapter = new NoteAdapter(ListNotesActivity.this, noteDTOs);
-        mNoteAdapter.setOnItemClickListener(this);
-        mNoteAdapter.notifyDataSetChanged();
-
     }
 
     private void initSwipe() {
@@ -171,6 +193,11 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list, menu);
         return true;
@@ -196,16 +223,17 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         switch (requestCode) {
             case REQUEST_CODE_CREATE:
                 if (resultCode == CreateNoteActivity.RESULT_CODE_SUCCESS) {
-                    mNoteAdapter.notifyItemInserted(noteDTOs.size());
+                    Toasty.success(this, "New note is added successfully!", Toast.LENGTH_SHORT).show();
                 } else if (resultCode == CreateNoteActivity.RESULT_CODE_FAILURE) {
                     Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_EDIT:
                 if (resultCode == CreateNoteActivity.RESULT_CODE_SUCCESS) {
-                    mNoteAdapter.notifyDataSetChanged();
+                    mNoteAdapter.updateItemAt(editPos, editedNote);
+                    Toasty.success(this, "Apply Change!", Toast.LENGTH_SHORT).show();
                 } else if (resultCode == CreateNoteActivity.RESULT_CODE_FAILURE) {
-                    Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
+                    Toasty.error(this, "Couldn't edit this note! Try again!", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -221,47 +249,43 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         switch (v.getId()) {
             case R.id.fab:
                 if (isFloatingActionButtonShow == false) {
-                    showAllFloatingActionButon();
-                    goToW();
-                    goToNW();
-                    goToN();
+                    runAllFAB();
                     isFloatingActionButtonShow = true;
                 } else {
-                    hideAllFloatingActionButon();
-                    returnN();
-                    returnNW();
-                    returnW();
+                    returnAllFAB();
                     isFloatingActionButtonShow = false;
                 }
                 break;
 
             case R.id.fab_new_note:
                 showCreateNoteScreen();
-                hideAllFloatingActionButon();
-                returnN();
-                returnNW();
-                returnW();
+                returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
 
             case R.id.fab_new_alarm:
                 Toast.makeText(this, "New alarm click", Toast.LENGTH_SHORT).show();
-                hideAllFloatingActionButon();
-                returnN();
-                returnNW();
-                returnW();
+                returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
 
             case R.id.fab_new_photo:
                 Toast.makeText(this, "New photo click", Toast.LENGTH_SHORT).show();
-                hideAllFloatingActionButon();
-                returnN();
-                returnNW();
-                returnW();
+                returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
         }
+    }
+
+    /****************************Spinner item selected*************************/
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     /***************** Add, Remove, Edit **********************************/
@@ -272,24 +296,23 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
     }
 
     private void editNote(int position) {
-        NoteDTO editNote = noteDTOs.get(position);
+        editPos = position;
+        editedNote = mNoteAdapter.get(position);
         Intent intentEdit = new Intent(ListNotesActivity.this, EditNoteActivity.class);
-        intentEdit.putExtra(EDIT_NOTE, editNote);
+        intentEdit.putExtra(EDIT_NOTE, editedNote);
         startActivityForResult(intentEdit, ListNotesActivity.REQUEST_CODE_EDIT);
     }
 
     private void deleteNote(int position) {
-        deletedNote = noteDTOs.get(position);
-        deletePos = position;
+        deletedNote = mNoteAdapter.get(position);
+        mNoteAdapter.remove(deletedNote);
         noteDAO.deleteNote(deletedNote);
-        mNoteAdapter.deleteNote(position);
         Snackbar.make(rltLayout, "1 item has been deleted", Snackbar.LENGTH_LONG)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        noteDTOs.add(deletePos, deletedNote);
+                        mNoteAdapter.add(deletedNote);
                         noteDAO.createNewNote(deletedNote);
-                        mNoteAdapter.notifyItemInserted(deletePos);
                     }
                 }).show();
     }
@@ -355,5 +378,19 @@ public class ListNotesActivity extends AppCompatActivity implements NoteAdapter.
         paramsW.bottomMargin = (int) (fabNewNote.getWidth() * 1.8);
         fabNewNote.setLayoutParams(paramsW);
         fabNewNote.startAnimation(retNanimation);
+    }
+
+    private void returnAllFAB() {
+        hideAllFloatingActionButon();
+        returnN();
+        returnNW();
+        returnW();
+    }
+
+    private void runAllFAB() {
+        showAllFloatingActionButon();
+        goToW();
+        goToNW();
+        goToN();
     }
 }

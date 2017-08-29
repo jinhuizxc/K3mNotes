@@ -8,20 +8,33 @@ public class NoteDTO implements Serializable {
     private String date;
     private String content;
     private String color;
+    private int priority;
+    private String modifiedDate;
 
-    public NoteDTO(int id, String title, String date, String content, String color) {
+    public NoteDTO(int id, String title, String date, String content, String color, int priority, String modifiedDate) {
         this.id = id;
         this.title = title;
         this.date = date;
         this.content = content;
         this.color = color;
+        this.priority = priority;
+        this.modifiedDate = modifiedDate;
     }
 
-    public NoteDTO(String title, String date, String content, String color) {
+    public NoteDTO(String title, String date, String content, String color, int priority, String modifiedDate) {
         this.title = title;
         this.date = date;
         this.content = content;
         this.color = color;
+        this.priority = priority;
+        this.modifiedDate = modifiedDate;
+    }
+
+    public NoteDTO(String title, String content, String color, int priority) {
+        this.title = title;
+        this.content = content;
+        this.color = color;
+        this.priority = priority;
     }
 
     public int getId() {
@@ -62,6 +75,22 @@ public class NoteDTO implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(String modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }
 

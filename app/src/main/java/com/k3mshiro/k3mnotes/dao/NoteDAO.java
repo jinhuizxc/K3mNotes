@@ -8,12 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
 import com.k3mshiro.k3mnotes.database.Database;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-
-/**
- * Created by k3mshiro on 8/23/17.
- */
+import java.util.Locale;
 
 public class NoteDAO {
 
@@ -38,12 +41,14 @@ public class NoteDAO {
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(db.COLUMN_NOTE_TITLE, newNote.getTitle().toString());
-        contentValues.put(db.COLUMN_NOTE_DATE, newNote.getDate().toString());
-        contentValues.put(db.COLUMN_NOTE_CONTENT, newNote.getContent().toString());
-        contentValues.put(db.COLUMN_NOTE_COLOR, newNote.getColor().toString());
+        contentValues.put(Database.COLUMN_NOTE_TITLE, newNote.getTitle());
+        contentValues.put(Database.COLUMN_NOTE_DATE, newNote.getDate());
+        contentValues.put(Database.COLUMN_NOTE_CONTENT, newNote.getContent());
+        contentValues.put(Database.COLUMN_NOTE_PRIORITY, newNote.getPriority());
+        contentValues.put(Database.COLUMN_MODIFIED_DATE, newNote.getModifiedDate());
+        contentValues.put(Database.COLUMN_NOTE_COLOR, newNote.getColor());
 
-        long idNhanVien = mSQLiteDB.insert(db.TABLE_NOTE, null, contentValues);
+        long idNhanVien = mSQLiteDB.insert(Database.TABLE_NOTE, null, contentValues);
 
         return idNhanVien != 0;
     }
@@ -52,36 +57,41 @@ public class NoteDAO {
     public List<NoteDTO> getListNotes() {
 
         List<NoteDTO> listNoteDTOs = new ArrayList<>();
-        String sqlCommand = "SELECT * FROM " + db.TABLE_NOTE;
+        String sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE;
         Cursor cursor = mSQLiteDB.rawQuery(sqlCommand, null);
-        int idIndex = cursor.getColumnIndex(db.COLUMN_NOTE_ID);
-        int titleIndex = cursor.getColumnIndex(db.COLUMN_NOTE_TITLE);
-        int dateIndex = cursor.getColumnIndex(db.COLUMN_NOTE_DATE);
-        int contentIndex = cursor.getColumnIndex(db.COLUMN_NOTE_CONTENT);
-        int colorIndex = cursor.getColumnIndex(db.COLUMN_NOTE_COLOR);
+
+        int idIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_ID);
+        int titleIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TITLE);
+        int dateIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_DATE);
+        int contentIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_CONTENT);
+        int colorIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_COLOR);
+        int modifiedDateIndex = cursor.getColumnIndex(Database.COLUMN_MODIFIED_DATE);
+        int priorityIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_PRIORITY);
 
         cursor.moveToFirst();
 
-        while (cursor.isAfterLast() == false) {
+        while (!cursor.isAfterLast()) {
             int id = cursor.getInt(idIndex);
             String title = cursor.getString(titleIndex);
             String date = cursor.getString(dateIndex);
             String content = cursor.getString(contentIndex);
+            String modifiedDate = cursor.getString(modifiedDateIndex);
+            int priority = cursor.getInt(priorityIndex);
             String color = cursor.getString(colorIndex);
-            NoteDTO newNote = new NoteDTO(id, title, date, content, color);
+
+            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate);
 
             listNoteDTOs.add(newNote);
 
             cursor.moveToNext();
         }
 
-
         return listNoteDTOs;
     }
 
     public boolean deleteNote(NoteDTO deletedNote) {
 
-        int result = mSQLiteDB.delete(db.TABLE_NOTE, db.COLUMN_NOTE_ID + " = " + deletedNote.getId(),
+        int result = mSQLiteDB.delete(Database.TABLE_NOTE, Database.COLUMN_NOTE_ID + " = " + deletedNote.getId(),
                 null);
 
 
@@ -92,14 +102,14 @@ public class NoteDAO {
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(db.COLUMN_NOTE_TITLE, editedNote.getTitle());
-        contentValues.put(db.COLUMN_NOTE_DATE, editedNote.getDate());
-        contentValues.put(db.COLUMN_NOTE_CONTENT, editedNote.getContent());
-        contentValues.put(db.COLUMN_NOTE_COLOR, editedNote.getColor());
+        contentValues.put(Database.COLUMN_NOTE_TITLE, editedNote.getTitle());
+        contentValues.put(Database.COLUMN_NOTE_DATE, editedNote.getDate());
+        contentValues.put(Database.COLUMN_NOTE_CONTENT, editedNote.getContent());
+        contentValues.put(Database.COLUMN_NOTE_COLOR, editedNote.getColor());
 
-        int result = mSQLiteDB.update(db.TABLE_NOTE,
+        int result = mSQLiteDB.update(Database.TABLE_NOTE,
                 contentValues,
-                db.COLUMN_NOTE_ID + " = " + editedNote.getId(),
+                Database.COLUMN_NOTE_ID + " = " + editedNote.getId(),
                 null);
 
         return result != 0;

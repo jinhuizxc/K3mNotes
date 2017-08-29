@@ -15,6 +15,8 @@ public class Database extends SQLiteOpenHelper {
     public static final String COLUMN_NOTE_DATE = "date";
     public static final String COLUMN_NOTE_CONTENT = "content";
     public static final String COLUMN_NOTE_COLOR = "color";
+    public static final String COLUMN_NOTE_PRIORITY = "priority";
+    public static final String COLUMN_MODIFIED_DATE = "modifiedDate";
 
     public Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -27,6 +29,8 @@ public class Database extends SQLiteOpenHelper {
                 + COLUMN_NOTE_TITLE + " TEXT, "
                 + COLUMN_NOTE_DATE + " TEXT, "
                 + COLUMN_NOTE_CONTENT + " TEXT, "
+                + COLUMN_NOTE_PRIORITY + " INTEGER, "
+                + COLUMN_MODIFIED_DATE + " TEXT, "
                 + COLUMN_NOTE_COLOR + " TEXT ); ";
 
         db.execSQL(sqlCommand);

@@ -1,5 +1,8 @@
 package com.k3mshiro.k3mnotes.activity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,9 +22,11 @@ import android.widget.ImageView;
 import com.k3mshiro.k3mnotes.R;
 import com.k3mshiro.k3mnotes.dao.NoteDAO;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
+import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class EditNoteActivity extends AppCompatActivity implements View.OnClickListener {
     private View colorPanel;
@@ -34,6 +39,8 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     private NoteDAO noteDAO;
     private String parseColor = "#4CAF50";
     private NoteDTO editedNote;
+    private Fragment infoFragment;
+    private int priority = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -173,6 +180,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_alarm_set:
                 break;
             case R.id.btn_info_look:
+                showNoteInfo();
                 break;
             case R.id.iv_color_fill:
                 showColorBar();
@@ -218,6 +226,22 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private void showNoteInfo() {
+        infoFragment = new DrawerInfoFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(DrawerInfoFragment.KEY_MODIFIED_DATE, editedNote.getDate());
+        bundle.putString(DrawerInfoFragment.KEY_CREATED_DATE, editedNote.getDate());
+        bundle.putString(DrawerInfoFragment.KEY_COLOR, parseColor);
+        bundle.putInt(DrawerInfoFragment.KEY_PRIORITY, priority);
+        infoFragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.createNote_act, infoFragment, CreateNoteActivity.class.getName());
+        fragmentTransaction.commit();
+    }
+
     private void showColorBar() {
         colorPanel.setVisibility(View.VISIBLE);
         edtTitle.setEnabled(false);
@@ -236,19 +260,25 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void editNote() {
-        editedNote.setTitle(edtTitle.getText().toString());
-        editedNote.setContent(edtContent.getText().toString());
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String date = dateFormat.format(c.getTime()).toString();
-        editedNote.setDate(date);
-        editedNote.setColor(parseColor);
+        String newTitle = edtTitle.getText().toString();
+        String newContent = edtContent.getText().toString();
+        String newColor = parseColor;
 
-        boolean result = noteDAO.editNote(editedNote);
-        if (result) {
-            setResult(CreateNoteActivity.RESULT_CODE_SUCCESS);
+        if (editedNote.getTitle().compareTo(newTitle) == 0
+                && editedNote.getContent().compareTo(newContent) == 0
+                && editedNote.getColor().compareTo(newColor) == 0) {
+            //back to list;
         } else {
-            setResult(CreateNoteActivity.RESULT_CODE_FAILURE);
+            editedNote.setTitle(newTitle);
+            editedNote.setContent(newContent);
+            editedNote.setModifiedDate(getDateTime());
+            editedNote.setColor(newColor);
+            boolean result = noteDAO.editNote(editedNote);
+            if (result) {
+                setResult(CreateNoteActivity.RESULT_CODE_SUCCESS);
+            } else {
+                setResult(CreateNoteActivity.RESULT_CODE_FAILURE);
+            }
         }
     }
 
@@ -256,5 +286,12 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

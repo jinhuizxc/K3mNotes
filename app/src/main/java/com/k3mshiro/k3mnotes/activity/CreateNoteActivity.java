@@ -1,6 +1,8 @@
 package com.k3mshiro.k3mnotes.activity;
 
-import android.content.Intent;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,9 +21,11 @@ import android.widget.ImageView;
 import com.k3mshiro.k3mnotes.R;
 import com.k3mshiro.k3mnotes.dao.NoteDAO;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
+import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class CreateNoteActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,7 +41,6 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     public static final CharSequence INFO_LOOK_BTN = "INFO_LOOK_BTN";
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
-    private static final String CREATE_NOTE_OBJ = "CREATE_NOTE_OBJ";
 
     private View colorPanel;
     private Button btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow, btnGreen, btnBlue, btnIndigo, btnViolet;
@@ -45,11 +48,11 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     private FloatingActionButton fabEditNote;
     private EditText edtTitle, edtContent;
     private Toolbar createToolbar;
+    private Fragment infoFragment;
 
     private NoteDAO noteDAO;
     private String parseColor = "#4CAF50";
-    private Intent intent;
-    private NoteDTO editedNote;
+    private int priority = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,29 +60,6 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_create_note);
         initViews();
         initNotes();
-    }
-
-    private void getData() {
-        editedNote = (NoteDTO) intent.getSerializableExtra(ListNotesActivity.EDIT_NOTE);
-        edtTitle.setText(editedNote.getTitle());
-        parseColor = editedNote.getColor();
-        edtTitle.setTextColor(Color.parseColor(parseColor));
-        edtContent.setText(editedNote.getContent());
-        if (parseColor.compareTo("#F44336") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
-        } else if (parseColor.compareTo("#FB8C00") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
-        } else if (parseColor.compareTo("#FFEA00") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
-        } else if (parseColor.compareTo("#4CAF50") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
-        } else if (parseColor.compareTo("#2196F3") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
-        } else if (parseColor.compareTo("#3F51B5") == 0) {
-            ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
-        } else {
-            ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
-        }
     }
 
     private void initViews() {
@@ -188,6 +168,7 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_alarm_set:
                 break;
             case R.id.btn_info_look:
+                showNoteInfo();
                 break;
             case R.id.iv_color_fill:
                 showColorBar();
@@ -233,6 +214,20 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    private void showNoteInfo() {
+        infoFragment = new DrawerInfoFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(DrawerInfoFragment.KEY_COLOR, parseColor);
+        bundle.putInt(DrawerInfoFragment.KEY_PRIORITY, priority);
+        infoFragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.createNote_act, infoFragment, CreateNoteActivity.class.getName());
+        fragmentTransaction.commit();
+    }
+
     private void showColorBar() {
         colorPanel.setVisibility(View.VISIBLE);
         edtTitle.setEnabled(false);
@@ -254,12 +249,11 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     private void createNewNote() {
         String title = edtTitle.getText().toString();
         String content = edtContent.getText().toString();
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String date = dateFormat.format(c.getTime()).toString();
         String color = parseColor;
-
-        NoteDTO newNote = new NoteDTO(title, date, content, color);
+        int priority = 0;
+        String date = getDateTime();
+        String modifiedDate = getDateTime();
+        NoteDTO newNote = new NoteDTO(title, date, content, color, priority, modifiedDate);
         boolean result = noteDAO.createNewNote(newNote);
 
         if (result) {
@@ -273,5 +267,12 @@ public class CreateNoteActivity extends AppCompatActivity implements View.OnClic
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

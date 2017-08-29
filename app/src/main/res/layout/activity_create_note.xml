@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/createNote_act"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true">
@@ -26,6 +27,5 @@
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_create_white_48dp"
         app:backgroundTint="@color/amber_A700" />
-
 
 </RelativeLayout>
