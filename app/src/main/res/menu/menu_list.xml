@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/item_settings"
-        android:title="@string/menu_list_setting" />
+        android:title="@string/menu_list_setting"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/item_about"
-        android:title="@string/menu_list_about" />
+        android:title="@string/menu_list_about"
+        app:showAsAction="never" />
 </menu>

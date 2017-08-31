@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
 
 public class DrawerInfoFragment extends Fragment implements View.OnClickListener {
 
@@ -19,11 +21,14 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
     public static final String KEY_MODIFIED_DATE = "KEY_MODIFIED_DATE";
     public static final String KEY_PRIORITY = "KEY_PRIORITY";
     public static final String KEY_COLOR = "KEY_COLOR";
+    public static final String KEY_THEME = "KEY_THEME";
 
     private View view;
-    private TextView tvCreatedDate, tvModifiedDate, tvPriority;
+    private LinearLayout linearLayout;
+    private TextView tvCreatedDate, tvModifiedDate, tvPriority, lblCreatedDate, lblModifiedDate, lblColor, lblPriority;
     private ImageView ivColor;
     private Button btnHide;
+    private String fragmentTheme;
 
     private String createdDate, modifiedDate, parseColor;
     private int priority;
@@ -39,17 +44,23 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
 
     private void getDatas() {
         Bundle bundle = getArguments();
-        createdDate = bundle.getString(KEY_CREATED_DATE, null);
-        modifiedDate = bundle.getString(KEY_MODIFIED_DATE, null);
+        createdDate = bundle.getString(KEY_CREATED_DATE, "");
+        modifiedDate = bundle.getString(KEY_MODIFIED_DATE, "");
         parseColor = bundle.getString(KEY_COLOR, "#4CAF50");
-        priority = bundle.getInt(KEY_PRIORITY);
+        priority = bundle.getInt(KEY_PRIORITY, 0);
+        fragmentTheme = bundle.getString(KEY_THEME);
     }
 
     private void initViews() {
+        linearLayout = (LinearLayout) view.findViewById(R.id.layout_info);
         tvCreatedDate = (TextView) view.findViewById(R.id.tv_content_createdDate);
         tvModifiedDate = (TextView) view.findViewById(R.id.tv_content_modifiedDate);
         tvPriority = (TextView) view.findViewById(R.id.tv_content_priority);
         ivColor = (ImageView) view.findViewById(R.id.iv_color);
+        lblCreatedDate = (TextView) view.findViewById(R.id.tv_label_createdDate);
+        lblModifiedDate = (TextView) view.findViewById(R.id.tv_label_modifiedDate);
+        lblColor = (TextView) view.findViewById(R.id.tv_color_info);
+        lblPriority = (TextView) view.findViewById(R.id.tv_label_priority);
         btnHide = (Button) view.findViewById(R.id.btn_drawer_back);
         btnHide.setOnClickListener(this);
 
@@ -90,6 +101,14 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
                 break;
             default:
                 break;
+        }
+
+        if (fragmentTheme.equals(ListNotesActivity.DARKTHEME)) {
+            linearLayout.setBackgroundColor(getResources().getColor(R.color.blue_grey_500));
+            btnHide.setBackgroundResource(R.drawable.ic_arrow_back_white_24dp);
+        } else {
+            btnHide.setBackgroundResource(R.drawable.ic_arrow_back_red_700_48dp);
+            linearLayout.setBackgroundColor(getResources().getColor(R.color.white));
         }
     }
 

@@ -15,9 +15,15 @@
     <string name="lbl_color">Color:</string>
     <string name="lbl_priority">Priority :</string>
 
+    <string name="night_mode">Night Mode</string>
+    <string name="night_mode_on_summary">Night mode is on</string>
+    <string name="night_mode_off_summary">Night mode is off</string>
+    <string name="menu_create_cbFavor">favorite</string>
+
     <string-array name="spinner_items">
-        <item>Modified Date</item>
-        <item>Priority</item>
+        <item>All</item>
+        <item>Favofite</item>
+        <item>Recycle Bin</item>
     </string-array>
 
 </resources>

@@ -49,6 +49,15 @@ public class ListNotesActivity extends AppCompatActivity implements
     public static final int REQUEST_CODE_CREATE = 101;
     public static final String EDIT_NOTE = "EDIT_NOTE";
     public static final int REQUEST_CODE_EDIT = 102;
+
+    public static final String THEME_PREFERENCES = "THEME_PREFERENCES";
+    public static final String RECREATE_ACTIVITY = "RECREATE_ACTIVITY";
+    public static final String THEME_SAVED = "THEME_SAVED";
+    public static final String DARKTHEME = "DARKTHEME";
+    public static final String LIGHTTHEME = "LIGHTTHEME";
+    private String theme = "name_of_the_theme";
+    private int mTheme = -1;
+
     private static final String SHARED_PREF_VIEW_MODE = "SHARED_PREF_VIEW_MODE";
     private static final String ALL_MODE = "ALL_MODE";
     private static final String MODIFIED_DATE_MODE = "MODIFIED_DATE_MODE";
@@ -62,8 +71,6 @@ public class ListNotesActivity extends AppCompatActivity implements
     private FloatingActionButton fabNewAlarm;
     private RelativeLayout rltLayout;
     private Spinner mSpinner;
-    private SharedPreferences sharedPreferences;
-    private SortedList<NoteDTO> sortedNotes;
 
     private NoteAdapter mNoteAdapter;
     private List<NoteDTO> noteDTOs;
@@ -73,7 +80,26 @@ public class ListNotesActivity extends AppCompatActivity implements
     private int editPos;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
+            SharedPreferences.Editor editor = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).edit();
+            editor.putBoolean(RECREATE_ACTIVITY, false);
+            editor.apply();
+            recreate();
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        theme = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getString(THEME_SAVED, LIGHTTHEME);
+
+        if (theme.equals(LIGHTTHEME)) {
+            mTheme = R.style.CustomStyle_LightTheme;
+        } else {
+            mTheme = R.style.CustomStyle_DarkTheme;
+        }
+        this.setTheme(mTheme);
         super.onCreate(savedInstanceState);
         requestPermissions();
     }
@@ -131,6 +157,11 @@ public class ListNotesActivity extends AppCompatActivity implements
         rltLayout = (RelativeLayout) findViewById(R.id.listNote_act);
 
         listToolbar = (Toolbar) findViewById(R.id.list_toolbar);
+        if (theme.equals(ListNotesActivity.DARKTHEME)) {
+            listToolbar.setBackgroundColor(getResources().getColor(R.color.blue_grey_500));
+        } else {
+            listToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }
         setSupportActionBar(listToolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
@@ -208,7 +239,9 @@ public class ListNotesActivity extends AppCompatActivity implements
         int id = item.getItemId();
         switch (id) {
             case R.id.item_settings:
-                break;
+                Intent intent = new Intent(ListNotesActivity.this, SettingActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.item_about:
                 break;
             default:

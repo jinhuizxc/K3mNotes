@@ -1,9 +1,9 @@
 package com.k3mshiro.k3mnotes.activity;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,13 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.k3mshiro.k3mnotes.R;
 import com.k3mshiro.k3mnotes.dao.NoteDAO;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
-import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,12 +36,12 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     public static final CharSequence VIOLET = "violet";
     public static final CharSequence ALARM_SET_BTN = "ALARM_SET_BTN";
     public static final CharSequence INFO_LOOK_BTN = "INFO_LOOK_BTN";
-    public static final int RESULT_CODE_SUCCESS = 1000;
-    public static final int RESULT_CODE_FAILURE = 1001;
     public static final CharSequence BTN_NONE = "none";
     public static final CharSequence BTN_LOW = "low";
     public static final CharSequence BTN_MEDIUM = "medium";
     public static final CharSequence BTN_HIGH = "high";
+    public static final int RESULT_CODE_SUCCESS = 1000;
+    public static final int RESULT_CODE_FAILURE = 1001;
 
     protected View colorPanel, priorityPanel;
     protected Button btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow,
@@ -50,6 +51,9 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     protected FloatingActionButton fabEditNote;
     protected EditText edtTitle, edtContent;
     protected Toolbar createToolbar;
+    protected RelativeLayout rltLayout;
+    protected String theme;
+    protected CheckBox cbFavorite;
 
     protected NoteDAO noteDAO;
     protected String parseColor = "#4CAF50";
@@ -59,6 +63,12 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        theme = getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
+        if (theme.equals(ListNotesActivity.LIGHTTHEME)) {
+            setTheme(R.style.CustomStyle_LightTheme);
+        } else {
+            setTheme(R.style.CustomStyle_DarkTheme);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_note);
         initViews();
@@ -66,14 +76,29 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initViews() {
+        rltLayout = (RelativeLayout) findViewById(R.id.createNote_act);
         createToolbar = (Toolbar) findViewById(R.id.create_toolbar);
         setSupportActionBar(createToolbar);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_check_red_800_24dp);
+        final Drawable check = getResources().getDrawable(R.drawable.ic_check_white_24dp);
+        if (check != null) {
+            if (theme.equals(ListNotesActivity.DARKTHEME)) {
+                check.setColorFilter(getResources().getColor(R.color.cyan_600), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                check.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+            }
+
+        }
+
+        if (getSupportActionBar() != null) {
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(check);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
+
+        cbFavorite = (CheckBox) createToolbar.findViewById(R.id.cbFavorite);
+        cbFavorite.setVisibility(View.VISIBLE);
 
         View editSide = findViewById(R.id.edit_size);
 
@@ -137,7 +162,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         btnHigh = (Button) priorityPanel.findViewById(R.id.btn_high);
         btnHigh.setContentDescription(BTN_HIGH);
 
-
         btnRed.setOnClickListener(this);
         btnOrange.setOnClickListener(this);
         btnYellow.setOnClickListener(this);
@@ -149,6 +173,10 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         btnLow.setOnClickListener(this);
         btnMedium.setOnClickListener(this);
         btnHigh.setOnClickListener(this);
+
+        if (theme.equals(ListNotesActivity.DARKTHEME)) {
+            edtContent.setTextColor(getResources().getColor(R.color.grey300));
+        }
 
     }
 
@@ -166,9 +194,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
                 inputMethodManager.showSoftInput(edtContent, InputMethodManager.SHOW_IMPLICIT);
                 break;
             case R.id.btn_alarm_set:
-                break;
-            case R.id.btn_info_look:
-                showNoteInfo();
                 break;
             case R.id.iv_color_fill:
                 showColorBar();
@@ -280,23 +305,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         edtContent.setEnabled(true);
         btnAlarmSet.setEnabled(true);
         btnInfoLook.setEnabled(true);
-    }
-
-
-    private void showNoteInfo() {
-        infoFragment = new DrawerInfoFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(DrawerInfoFragment.KEY_MODIFIED_DATE, editedNote.getModifiedDate());
-        bundle.putString(DrawerInfoFragment.KEY_CREATED_DATE, editedNote.getDate());
-        bundle.putString(DrawerInfoFragment.KEY_COLOR, editedNote.getColor());
-        bundle.putInt(DrawerInfoFragment.KEY_PRIORITY, editedNote.getPriority());
-        infoFragment.setArguments(bundle);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.createNote_act, infoFragment, BaseEditActivity.class.getName());
-        fragmentTransaction.commit();
     }
 
     private void showColorBar() {

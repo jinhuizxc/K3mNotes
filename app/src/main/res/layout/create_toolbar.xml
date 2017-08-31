@@ -3,7 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/action_bar_size"
-    app:popupTheme="@style/AppBarTheme"
-    app:theme="@style/AppBarTheme">
+    app:elevation="8dp"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="4dp"
+        android:background="@android:color/transparent">
+
+        <CheckBox
+            android:id="@+id/cbFavorite"
+            style="?android:attr/starStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone" />
+
+    </TableRow>
+
 
 </android.support.v7.widget.Toolbar>

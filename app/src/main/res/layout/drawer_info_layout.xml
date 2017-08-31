@@ -4,26 +4,25 @@
     android:layout_height="match_parent"
     android:background="@color/grey_800_trans">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/layout_info"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="60dp"
-        android:background="@android:color/white">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/btn_drawer_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/ic_arrow_back_red_700_48dp" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp" />
 
         <TextView
             android:id="@+id/tv_label_createdDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:layout_marginTop="40dp"
             android:text="@string/lbl_created_date"
             android:textSize="14sp" />
 
@@ -31,16 +30,13 @@
             android:id="@+id/tv_content_createdDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_label_createdDate"
             android:layout_marginStart="60dp"
-            android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_label_modifiedDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_content_createdDate"
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
             android:text="@string/lbl_modified_date"
@@ -50,7 +46,6 @@
             android:id="@+id/tv_content_modifiedDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_label_modifiedDate"
             android:layout_marginStart="60dp"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
@@ -59,7 +54,6 @@
             android:id="@+id/iv_divider_date"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_below="@id/tv_content_modifiedDate"
             android:layout_marginEnd="20dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
@@ -69,7 +63,6 @@
             android:id="@+id/tv_color_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/iv_divider_date"
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
             android:text="@string/lbl_color"
@@ -79,16 +72,13 @@
             android:id="@+id/iv_color"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_below="@id/iv_divider_date"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="15dp"
-            android:layout_toEndOf="@id/tv_color_info" />
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="15dp" />
 
         <ImageView
             android:id="@+id/iv_divider_color"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_below="@id/tv_color_info"
             android:layout_marginEnd="20dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
@@ -98,7 +88,6 @@
             android:id="@+id/tv_label_priority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/iv_divider_color"
             android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
             android:text="@string/lbl_priority"
@@ -108,12 +97,9 @@
             android:id="@+id/tv_content_priority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/iv_divider_color"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="60dp"
             android:layout_marginTop="20dp"
-            android:layout_toEndOf="@id/tv_label_priority"
-            android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-    </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>
