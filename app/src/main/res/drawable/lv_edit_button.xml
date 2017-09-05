@@ -3,8 +3,4 @@
     <item android:drawable="@drawable/ic_check_red_800_24dp"
         android:maxLevel="0"
         android:minLevel="0"/>
-
-    <item android:drawable="@drawable/ic_arrow_back_red_700_48dp"
-        android:maxLevel="1"
-        android:minLevel="1"/>
 </level-list>

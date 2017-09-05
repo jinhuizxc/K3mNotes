@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,10 +14,6 @@ import android.view.MenuItem;
 
 import com.k3mshiro.k3mnotes.R;
 import com.k3mshiro.k3mnotes.fragment.SettingsFragment;
-
-/**
- * Created by k3mshiro on 8/29/17.
- */
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -35,10 +32,10 @@ public class SettingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        final Drawable backArrow = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
+        final Drawable backArrow = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_white_24dp);
         if (backArrow != null) {
             if (theme.equals(ListNotesActivity.DARKTHEME)) {
-                backArrow.setColorFilter(getResources().getColor(R.color.grey300), PorterDuff.Mode.SRC_ATOP);
+                backArrow.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey300), PorterDuff.Mode.SRC_ATOP);
             } else {
                 backArrow.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
             }

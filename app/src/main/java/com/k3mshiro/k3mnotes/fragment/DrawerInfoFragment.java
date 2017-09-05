@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
 
     private View view;
     private LinearLayout linearLayout;
-    private TextView tvCreatedDate, tvModifiedDate, tvPriority, lblCreatedDate, lblModifiedDate, lblColor, lblPriority;
+    private TextView tvCreatedDate, tvModifiedDate, tvPriority;
     private ImageView ivColor;
     private Button btnHide;
     private String fragmentTheme;
@@ -57,10 +58,6 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
         tvModifiedDate = (TextView) view.findViewById(R.id.tv_content_modifiedDate);
         tvPriority = (TextView) view.findViewById(R.id.tv_content_priority);
         ivColor = (ImageView) view.findViewById(R.id.iv_color);
-        lblCreatedDate = (TextView) view.findViewById(R.id.tv_label_createdDate);
-        lblModifiedDate = (TextView) view.findViewById(R.id.tv_label_modifiedDate);
-        lblColor = (TextView) view.findViewById(R.id.tv_color_info);
-        lblPriority = (TextView) view.findViewById(R.id.tv_label_priority);
         btnHide = (Button) view.findViewById(R.id.btn_drawer_back);
         btnHide.setOnClickListener(this);
 
@@ -84,19 +81,19 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
 
         switch (priority) {
             case 0:
-                tvPriority.setText("None");
+                tvPriority.setText(getText(R.string.none_priority));
                 tvPriority.setTextColor(Color.parseColor("#2196F3"));
                 break;
             case 1:
-                tvPriority.setText("Low");
+                tvPriority.setText(getText(R.string.low_priority));
                 tvPriority.setTextColor(Color.parseColor("#4CAF50"));
                 break;
             case 2:
-                tvPriority.setText("Medium");
+                tvPriority.setText(getText(R.string.medium_priority));
                 tvPriority.setTextColor(Color.parseColor("#FFEA00"));
                 break;
             case 3:
-                tvPriority.setText("High");
+                tvPriority.setText(getText(R.string.high_priority));
                 tvPriority.setTextColor(Color.parseColor("#FB8C00"));
                 break;
             default:
@@ -104,11 +101,11 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
         }
 
         if (fragmentTheme.equals(ListNotesActivity.DARKTHEME)) {
-            linearLayout.setBackgroundColor(getResources().getColor(R.color.blue_grey_500));
+            linearLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.blue_grey_500));
             btnHide.setBackgroundResource(R.drawable.ic_arrow_back_white_24dp);
         } else {
             btnHide.setBackgroundResource(R.drawable.ic_arrow_back_red_700_48dp);
-            linearLayout.setBackgroundColor(getResources().getColor(R.color.white));
+            linearLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
         }
     }
 

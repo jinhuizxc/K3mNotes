@@ -10,7 +10,7 @@
         layout="@layout/create_toolbar" />
 
     <include
-        android:id="@+id/edit_size"
+        android:id="@+id/edit_side"
         layout="@layout/layout_edit_side"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

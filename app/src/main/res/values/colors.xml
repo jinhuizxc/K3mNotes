@@ -30,4 +30,6 @@
     <color name="blue_grey_700">#455A64</color>
     <color name="cyan_600">#00ACC1</color>
     <color name="white">#FFFFFF</color>
+    <color name="blue_grey_800">#37474F</color>
+    <color name="grey_800">#424242</color>
 </resources>

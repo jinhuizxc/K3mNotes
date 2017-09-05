@@ -9,16 +9,28 @@
     <TableRow
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="4dp"
-        android:background="@android:color/transparent">
+        android:layout_gravity="end"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp">
+
+        <ImageView
+            android:id="@+id/iv_textFormat"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/lv_text_format_light"
+            android:contentDescription="@string/iv_text_format"
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/cbFavorite"
-            style="?android:attr/starStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:button="@drawable/star_style_checkbox"
             android:visibility="gone" />
 
     </TableRow>

@@ -10,10 +10,6 @@ import com.k3mshiro.k3mnotes.R;
 import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
 import com.k3mshiro.k3mnotes.dao.PreferenceKeys;
 
-/**
- * Created by k3mshiro on 8/29/17.
- */
-
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override

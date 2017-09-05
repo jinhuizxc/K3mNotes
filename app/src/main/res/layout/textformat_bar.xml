@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setUndo"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_undo_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setRedo"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_redo_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setBold"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_bold_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setItalic"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_italic_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setUnderline"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_underlined_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setStrikeThrough"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_strikethrough_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_insertBullet"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_list_bulleted_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_insertNumber"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_list_numbered_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setIndent"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_indent_increase_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setOutdent"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_indent_decrease_grey_300_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_insertCheckbox"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_check_box_white_24dp" />
+
+        </TableRow>
+    </HorizontalScrollView>
+</android.support.v7.widget.CardView>

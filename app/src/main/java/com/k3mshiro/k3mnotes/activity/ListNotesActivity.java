@@ -11,9 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -58,10 +58,6 @@ public class ListNotesActivity extends AppCompatActivity implements
     private String theme = "name_of_the_theme";
     private int mTheme = -1;
 
-    private static final String SHARED_PREF_VIEW_MODE = "SHARED_PREF_VIEW_MODE";
-    private static final String ALL_MODE = "ALL_MODE";
-    private static final String MODIFIED_DATE_MODE = "MODIFIED_DATE_MODE";
-    private static final String PRIORIRY_MODE = "PRIORIRY_MODE";
 
     private Toolbar listToolbar;
     private RecyclerViewEmptySupport rvList;
@@ -69,8 +65,8 @@ public class ListNotesActivity extends AppCompatActivity implements
     private FloatingActionButton fabNewNote;
     private FloatingActionButton fabNewPhoto;
     private FloatingActionButton fabNewAlarm;
-    private RelativeLayout rltLayout;
-    private Spinner mSpinner;
+    private RelativeLayout rltListNote;
+    private Spinner spinner;
 
     private NoteAdapter mNoteAdapter;
     private List<NoteDTO> noteDTOs;
@@ -147,31 +143,29 @@ public class ListNotesActivity extends AppCompatActivity implements
     private void initNotes() {
         noteDAO = new NoteDAO(this);
         noteDAO.openDatabase();
-        noteDTOs = noteDAO.getListNotes();
+        noteDTOs = noteDAO.getAllNotes();
         mNoteAdapter = new NoteAdapter(ListNotesActivity.this);
         mNoteAdapter.addAll(noteDTOs);
         mNoteAdapter.setOnItemClickListener(this);
     }
 
     private void initViews() {
-        rltLayout = (RelativeLayout) findViewById(R.id.listNote_act);
+        rltListNote = (RelativeLayout) findViewById(R.id.listNote_act);
 
         listToolbar = (Toolbar) findViewById(R.id.list_toolbar);
-        if (theme.equals(ListNotesActivity.DARKTHEME)) {
-            listToolbar.setBackgroundColor(getResources().getColor(R.color.blue_grey_500));
-        } else {
-            listToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        }
         setSupportActionBar(listToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
 
-        mSpinner = (Spinner) listToolbar.findViewById(R.id.spinner_nav);
+        if (getSupportActionBar() != null) {
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
+
+        spinner = (Spinner) listToolbar.findViewById(R.id.spinner_nav);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner.setAdapter(adapter);
-        mSpinner.setOnItemSelectedListener(this);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         rvList = (RecyclerViewEmptySupport) findViewById(R.id.cardList);
         rvList.setEmptyView(findViewById(R.id.list_empty_view));
@@ -185,10 +179,19 @@ public class ListNotesActivity extends AppCompatActivity implements
         rvList.addItemDecoration(
                 new DividerItem(this, R.drawable.divider));
          */
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
         fabNewAlarm = (FloatingActionButton) findViewById(R.id.fab_new_alarm);
         fabNewPhoto = (FloatingActionButton) findViewById(R.id.fab_new_photo);
+
+        if (theme.equals(ListNotesActivity.DARKTHEME)) {
+            listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
+        } else {
+            listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+            rltListNote.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
+        }
+
         fab.setOnClickListener(this);
         fabNewNote.setOnClickListener(this);
         fabNewAlarm.setOnClickListener(this);
@@ -281,7 +284,7 @@ public class ListNotesActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab:
-                if (isFloatingActionButtonShow == false) {
+                if (!isFloatingActionButtonShow) {
                     runAllFAB();
                     isFloatingActionButtonShow = true;
                 } else {
@@ -340,7 +343,7 @@ public class ListNotesActivity extends AppCompatActivity implements
         deletedNote = mNoteAdapter.get(position);
         mNoteAdapter.remove(deletedNote);
         noteDAO.deleteNote(deletedNote);
-        Snackbar.make(rltLayout, "1 item has been deleted", Snackbar.LENGTH_LONG)
+        Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_LONG)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

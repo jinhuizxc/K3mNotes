@@ -4,12 +4,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.text.DateFormat;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+    private final String theme;
     private SortedList<NoteDTO> sortedNotes;
     private static OnItemClickListener listener;
     private LayoutInflater mLayoutInflater;
@@ -34,9 +38,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         NoteAdapter.listener = listener;
     }
 
-    public NoteAdapter(Context context) {
-        this.mContext = context;
-        mLayoutInflater = LayoutInflater.from(context);
+    public NoteAdapter(Context mContext) {
+        this.mContext = mContext;
+        mLayoutInflater = LayoutInflater.from(mContext);
         sortedNotes = new SortedList<>(NoteDTO.class, new SortedList.Callback<NoteDTO>() {
             @Override
             public void onInserted(int position, int count) {
@@ -75,6 +79,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                 return note1.getId() == note2.getId();
             }
         });
+        theme = mContext.getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, Context.MODE_PRIVATE).getString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
     }
 
     @Override
@@ -88,9 +93,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         NoteDTO note = sortedNotes.get(position);
         holder.tvDate.setText(note.getModifiedDate().substring(0, 10));
         holder.tvTitle.setText(note.getTitle());
-        holder.tvContent.setText(note.getContent());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            holder.tvContent.setText(Html.fromHtml(note.getContent(), Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            holder.tvContent.setText(Html.fromHtml(note.getContent()));
+        }
         holder.tvDate.setBackgroundColor(Color.parseColor(note.getColor()));
         holder.tvTitle.setTextColor(Color.parseColor(note.getColor()));
+        if (note.getFavoriteValue() == 1) {
+            holder.ivFavoriteIcon.setVisibility(View.VISIBLE);
+        }
+        if (theme.equals(ListNotesActivity.LIGHTTHEME)) {
+            holder.ivFavoriteIcon.setBackgroundResource(R.drawable.amber_triangle_drawable);
+        } else {
+            holder.ivFavoriteIcon.setBackgroundResource(R.drawable.cyan_triangle_drawable);
+        }
     }
 
     @Override
@@ -99,15 +116,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
+        private ImageView ivFavoriteIcon;
         private TextView tvDate;
         private TextView tvContent;
         private TextView tvTitle;
 
-        public NoteViewHolder(final View itemView) {
+        private NoteViewHolder(final View itemView) {
             super(itemView);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
             tvContent = (TextView) itemView.findViewById(R.id.tvContent);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
+            ivFavoriteIcon = (ImageView) itemView.findViewById(R.id.favorite_icon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -34,8 +34,9 @@ public class EditNoteActivity extends BaseEditActivity {
         edtTitle.setText(editedNote.getTitle());
         parseColor = editedNote.getColor();
         edtTitle.setTextColor(Color.parseColor(parseColor));
-        edtContent.setText(editedNote.getContent());
+        redtContent.setHtml(editedNote.getContent());
         priority = editedNote.getPriority();
+        favorValue = editedNote.getFavoriteValue();
 
         if (parseColor.compareTo("#F44336") == 0) {
             ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
@@ -54,7 +55,7 @@ public class EditNoteActivity extends BaseEditActivity {
         }
 
         if (priority == 0) {
-            btnPrioritySet.setText("None");
+            btnPrioritySet.setText(getText(R.string.none_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#2196F3"));
             btnNone.setBackgroundColor(Color.parseColor("#2196F3"));
             btnNone.setTextColor(Color.WHITE);
@@ -65,7 +66,7 @@ public class EditNoteActivity extends BaseEditActivity {
             btnHigh.setBackgroundColor(Color.WHITE);
             btnHigh.setTextColor(Color.parseColor("#2196F3"));
         } else if (priority == 1) {
-            btnPrioritySet.setText("Low");
+            btnPrioritySet.setText(getText(R.string.low_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#4CAF50"));
             btnNone.setBackgroundColor(Color.WHITE);
             btnNone.setTextColor(Color.parseColor("#2196F3"));
@@ -77,7 +78,7 @@ public class EditNoteActivity extends BaseEditActivity {
             btnHigh.setTextColor(Color.parseColor("#2196F3"));
 
         } else if (priority == 2) {
-            btnPrioritySet.setText("Medium");
+            btnPrioritySet.setText(getText(R.string.medium_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#FFEA00"));
             btnNone.setBackgroundColor(Color.WHITE);
             btnNone.setTextColor(Color.parseColor("#2196F3"));
@@ -89,7 +90,7 @@ public class EditNoteActivity extends BaseEditActivity {
             btnHigh.setTextColor(Color.parseColor("#2196F3"));
 
         } else if (priority == 3) {
-            btnPrioritySet.setText("High");
+            btnPrioritySet.setText(getText(R.string.high_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#FB8C00"));
             btnNone.setBackgroundColor(Color.WHITE);
             btnNone.setTextColor(Color.parseColor("#2196F3"));
@@ -99,6 +100,12 @@ public class EditNoteActivity extends BaseEditActivity {
             btnMedium.setTextColor(Color.parseColor("#2196F3"));
             btnHigh.setBackgroundColor(Color.parseColor("#2196F3"));
             btnHigh.setTextColor(Color.WHITE);
+        }
+
+        if (favorValue == 1) {
+            cbFavorite.setChecked(true);
+        } else {
+            cbFavorite.setChecked(false);
         }
     }
 
@@ -128,14 +135,16 @@ public class EditNoteActivity extends BaseEditActivity {
 
     private void editNote() {
         String newTitle = edtTitle.getText().toString();
-        String newContent = edtContent.getText().toString();
+        String newContent = redtContent.getHtml();
         String newColor = parseColor;
         int newPriority = priority;
+        int newFavorValue = favorValue;
 
         if (editedNote.getTitle().compareTo(newTitle) == 0
                 && editedNote.getContent().compareTo(newContent) == 0
                 && editedNote.getColor().compareTo(newColor) == 0
-                && editedNote.getPriority() == newPriority) {
+                && editedNote.getPriority() == newPriority
+                && editedNote.getFavoriteValue() == newFavorValue) {
             //back to list;
         } else {
             editedNote.setTitle(newTitle);
@@ -143,6 +152,7 @@ public class EditNoteActivity extends BaseEditActivity {
             editedNote.setModifiedDate(getDateTime());
             editedNote.setColor(newColor);
             editedNote.setPriority(newPriority);
+            editedNote.setFavoriteValue(newFavorValue);
             boolean result = noteDAO.editNote(editedNote);
             if (result) {
                 setResult(BaseEditActivity.RESULT_CODE_SUCCESS);

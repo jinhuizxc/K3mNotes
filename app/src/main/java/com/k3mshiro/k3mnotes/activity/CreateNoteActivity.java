@@ -70,10 +70,10 @@ public class CreateNoteActivity extends BaseEditActivity {
 
     private void createNewNote() {
         String title = edtTitle.getText().toString();
-        String content = edtContent.getText().toString();
+        String content = redtContent.getHtml();
         String date = getDateTime();
         String modifiedDate = getDateTime();
-        NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate);
+        NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate, favorValue);
         boolean result = noteDAO.createNewNote(newNote);
 
         if (result) {
