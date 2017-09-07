@@ -15,6 +15,19 @@ import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 public class CreateNoteActivity extends BaseEditActivity {
 
     private static final String TAG = CreateNoteActivity.class.getName();
+    private static final String NULL_HTML_CODE = "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "<head>\n" +
+            "    <meta name=\"viewport\" content=\"user-scalable=no\">\n" +
+            "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
+            "    <link rel=\"stylesheet\" type=\"text/css\" href=\"normalize.css\">\n" +
+            "    <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">\n" +
+            "</head>\n" +
+            "<body>\n" +
+            "<div id=\"editor\" contenteditable=\"true\"></div>\n" +
+            "<script type=\"text/javascript\" src=\"rich_editor.js\"></script>\n" +
+            "</body>\n" +
+            "</html>\n";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +83,12 @@ public class CreateNoteActivity extends BaseEditActivity {
 
     private void createNewNote() {
         String title = edtTitle.getText().toString();
-        String content = redtContent.getHtml();
+        String content;
+        if (redtContent.getHtml() == null) {
+            content = NULL_HTML_CODE;
+        } else {
+            content = redtContent.getHtml();
+        }
         String date = getDateTime();
         String modifiedDate = getDateTime();
         NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate, favorValue);

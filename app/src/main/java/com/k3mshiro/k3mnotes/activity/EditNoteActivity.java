@@ -57,49 +57,17 @@ public class EditNoteActivity extends BaseEditActivity {
         if (priority == 0) {
             btnPrioritySet.setText(getText(R.string.none_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#2196F3"));
-            btnNone.setBackgroundColor(Color.parseColor("#2196F3"));
-            btnNone.setTextColor(Color.WHITE);
-            btnLow.setBackgroundColor(Color.WHITE);
-            btnLow.setTextColor(Color.parseColor("#2196F3"));
-            btnMedium.setBackgroundColor(Color.WHITE);
-            btnMedium.setTextColor(Color.parseColor("#2196F3"));
-            btnHigh.setBackgroundColor(Color.WHITE);
-            btnHigh.setTextColor(Color.parseColor("#2196F3"));
         } else if (priority == 1) {
             btnPrioritySet.setText(getText(R.string.low_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#4CAF50"));
-            btnNone.setBackgroundColor(Color.WHITE);
-            btnNone.setTextColor(Color.parseColor("#2196F3"));
-            btnLow.setBackgroundColor(Color.parseColor("#2196F3"));
-            btnLow.setTextColor(Color.WHITE);
-            btnMedium.setBackgroundColor(Color.WHITE);
-            btnMedium.setTextColor(Color.parseColor("#2196F3"));
-            btnHigh.setBackgroundColor(Color.WHITE);
-            btnHigh.setTextColor(Color.parseColor("#2196F3"));
 
         } else if (priority == 2) {
             btnPrioritySet.setText(getText(R.string.medium_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#FFEA00"));
-            btnNone.setBackgroundColor(Color.WHITE);
-            btnNone.setTextColor(Color.parseColor("#2196F3"));
-            btnLow.setBackgroundColor(Color.WHITE);
-            btnLow.setTextColor(Color.parseColor("#2196F3"));
-            btnMedium.setBackgroundColor(Color.parseColor("#2196F3"));
-            btnMedium.setTextColor(Color.WHITE);
-            btnHigh.setBackgroundColor(Color.WHITE);
-            btnHigh.setTextColor(Color.parseColor("#2196F3"));
 
         } else if (priority == 3) {
             btnPrioritySet.setText(getText(R.string.high_priority));
             btnPrioritySet.setTextColor(Color.parseColor("#FB8C00"));
-            btnNone.setBackgroundColor(Color.WHITE);
-            btnNone.setTextColor(Color.parseColor("#2196F3"));
-            btnLow.setBackgroundColor(Color.WHITE);
-            btnLow.setTextColor(Color.parseColor("#2196F3"));
-            btnMedium.setBackgroundColor(Color.WHITE);
-            btnMedium.setTextColor(Color.parseColor("#2196F3"));
-            btnHigh.setBackgroundColor(Color.parseColor("#2196F3"));
-            btnHigh.setTextColor(Color.WHITE);
         }
 
         if (favorValue == 1) {

@@ -1,8 +1,10 @@
 package com.k3mshiro.k3mnotes.activity;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,7 +37,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
 
-    protected View colorPanel, priorityPanel, editSide, formatBar;
+    protected View editSide, formatBar;
     protected Button btnPrioritySet,
             btnNone, btnLow, btnMedium, btnHigh;
     protected SquareButton btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow,
@@ -47,6 +50,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     protected RichEditor redtContent;
     protected Toolbar createToolbar;
     protected CheckBox cbFavorite;
+    protected Dialog priorityDialog, colorSetDialog, textFormatDialog;
 
     protected String theme;
     protected NoteDAO noteDAO;
@@ -135,52 +139,98 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         fabEditNote.setOnClickListener(this);
     }
 
-    private void initPriorityBar() {
-        priorityPanel = editSide.findViewById(R.id.priority_panel);
-        btnNone = (Button) priorityPanel.findViewById(R.id.btn_none);
-        btnLow = (Button) priorityPanel.findViewById(R.id.btn_low);
-        btnMedium = (Button) priorityPanel.findViewById(R.id.btn_medium);
-        btnHigh = (Button) priorityPanel.findViewById(R.id.btn_high);
-
-        btnNone.setOnClickListener(this);
-        btnLow.setOnClickListener(this);
-        btnMedium.setOnClickListener(this);
-        btnHigh.setOnClickListener(this);
-    }
-
     private void initColorBar() {
-        colorPanel = editSide.findViewById(R.id.color_panel);
-        btnRed = (SquareButton) colorPanel.findViewById(R.id.btn_red);
-        btnOrange = (SquareButton) colorPanel.findViewById(R.id.btn_orange);
-        btnYellow = (SquareButton) colorPanel.findViewById(R.id.btn_yellow);
-        btnGreen = (SquareButton) colorPanel.findViewById(R.id.btn_green);
-        btnBlue = (SquareButton) colorPanel.findViewById(R.id.btn_blue);
-        btnIndigo = (SquareButton) colorPanel.findViewById(R.id.btn_indigo);
-        btnViolet = (SquareButton) colorPanel.findViewById(R.id.btn_violet);
 
-        btnRed.setOnClickListener(this);
-        btnOrange.setOnClickListener(this);
-        btnYellow.setOnClickListener(this);
-        btnGreen.setOnClickListener(this);
-        btnBlue.setOnClickListener(this);
-        btnIndigo.setOnClickListener(this);
-        btnViolet.setOnClickListener(this);
+        colorSetDialog = new Dialog(BaseEditActivity.this);
+        colorSetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        colorSetDialog.setCancelable(false);
+        colorSetDialog.setContentView(R.layout.color_bar_layout);
+
+        WindowManager.LayoutParams windowLayout = colorSetDialog.getWindow()
+                .getAttributes();
+        windowLayout.verticalMargin = -0.16F;
+        colorSetDialog.getWindow().setAttributes(windowLayout);
+
+        btnRed = (SquareButton) colorSetDialog.findViewById(R.id.btn_red);
+        btnOrange = (SquareButton) colorSetDialog.findViewById(R.id.btn_orange);
+        btnYellow = (SquareButton) colorSetDialog.findViewById(R.id.btn_yellow);
+        btnGreen = (SquareButton) colorSetDialog.findViewById(R.id.btn_green);
+        btnBlue = (SquareButton) colorSetDialog.findViewById(R.id.btn_blue);
+        btnIndigo = (SquareButton) colorSetDialog.findViewById(R.id.btn_indigo);
+        btnViolet = (SquareButton) colorSetDialog.findViewById(R.id.btn_violet);
+
+        btnRed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#F44336";
+                ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnOrange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#FB8C00";
+                ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnYellow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#FFEA00";
+                ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnGreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#4CAF50";
+                ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnBlue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#2196F3";
+                ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnIndigo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#3F51B5";
+                ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
+        btnViolet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parseColor = "#9C27B0";
+                ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
+                colorSetDialog.cancel();
+            }
+        });
     }
 
     private void initTextFormat() {
         formatBar = editSide.findViewById(R.id.layout_textFormat);
 
-        ivUndo = (SquareImageView) formatBar.findViewById(R.id.iv_setUndo);
-        ivRedo = (SquareImageView) formatBar.findViewById(R.id.iv_setRedo);
-        ivBold = (SquareImageView) formatBar.findViewById(R.id.iv_setBold);
-        ivItalic = (SquareImageView) formatBar.findViewById(R.id.iv_setItalic);
-        ivUnderline = (SquareImageView) formatBar.findViewById(R.id.iv_setUnderline);
-        ivStrike = (SquareImageView) formatBar.findViewById(R.id.iv_setStrikeThrough);
-        ivBullets = (SquareImageView) formatBar.findViewById(R.id.iv_insertBullet);
-        ivNumbers = (SquareImageView) formatBar.findViewById(R.id.iv_insertNumber);
-        ivIndent = (SquareImageView) formatBar.findViewById(R.id.iv_setIndent);
-        ivOutdent = (SquareImageView) formatBar.findViewById(R.id.iv_setOutdent);
-        ivCbAdd = (SquareImageView) formatBar.findViewById(R.id.iv_insertCheckbox);
+        ivUndo = (SquareImageView) editSide.findViewById(R.id.iv_setUndo);
+        ivRedo = (SquareImageView) editSide.findViewById(R.id.iv_setRedo);
+        ivBold = (SquareImageView) editSide.findViewById(R.id.iv_setBold);
+        ivItalic = (SquareImageView) editSide.findViewById(R.id.iv_setItalic);
+        ivUnderline = (SquareImageView) editSide.findViewById(R.id.iv_setUnderline);
+        ivStrike = (SquareImageView) editSide.findViewById(R.id.iv_setStrikeThrough);
+        ivBullets = (SquareImageView) editSide.findViewById(R.id.iv_insertBullet);
+        ivNumbers = (SquareImageView) editSide.findViewById(R.id.iv_insertNumber);
+        ivIndent = (SquareImageView) editSide.findViewById(R.id.iv_setIndent);
+        ivOutdent = (SquareImageView) editSide.findViewById(R.id.iv_setOutdent);
+        ivCbAdd = (SquareImageView) editSide.findViewById(R.id.iv_insertCheckbox);
 
         ivUndo.setOnClickListener(this);
         ivRedo.setOnClickListener(this);
@@ -193,6 +243,61 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         ivIndent.setOnClickListener(this);
         ivOutdent.setOnClickListener(this);
         ivCbAdd.setOnClickListener(this);
+    }
+
+    private void initPriorityBar() {
+        priorityDialog = new Dialog(BaseEditActivity.this);
+        priorityDialog.setCancelable(false);
+        priorityDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        priorityDialog.setContentView(R.layout.priority_bar_layout);
+
+        WindowManager.LayoutParams windowLayout = priorityDialog.getWindow()
+                .getAttributes();
+        windowLayout.verticalMargin = -0.17F;
+        priorityDialog.getWindow().setAttributes(windowLayout);
+
+        btnNone = (Button) priorityDialog.findViewById(R.id.btn_none);
+        btnLow = (Button) priorityDialog.findViewById(R.id.btn_low);
+        btnMedium = (Button) priorityDialog.findViewById(R.id.btn_medium);
+        btnHigh = (Button) priorityDialog.findViewById(R.id.btn_high);
+
+        btnNone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                priority = 0;
+                btnPrioritySet.setText(getText(R.string.none_priority));
+                btnPrioritySet.setTextColor(Color.parseColor("#2196F3"));
+                priorityDialog.cancel();
+            }
+        });
+        btnLow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                priority = 1;
+                btnPrioritySet.setText(getText(R.string.low_priority));
+                btnPrioritySet.setTextColor(Color.parseColor("#4CAF50"));
+                priorityDialog.cancel();
+            }
+        });
+
+        btnMedium.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                priority = 2;
+                btnPrioritySet.setText(getText(R.string.medium_priority));
+                btnPrioritySet.setTextColor(Color.parseColor("#FFEA00"));
+                priorityDialog.cancel();
+            }
+        });
+        btnHigh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                priority = 3;
+                btnPrioritySet.setText(getText(R.string.high_priority));
+                btnPrioritySet.setTextColor(Color.parseColor("#FB8C00"));
+                priorityDialog.cancel();
+            }
+        });
     }
 
     private void initNotes() {
@@ -211,7 +316,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_alarm_set:
                 break;
             case R.id.iv_color_fill:
-                showColorBar();
+                showColorSetBar();
                 break;
             case R.id.btn_priority_set:
                 showPriorityBar();
@@ -225,98 +330,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
                     ivTextFormat.setImageLevel(0);
                 }
                 break;
-            case R.id.btn_red:
-                parseColor = "#F44336";
-                ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_orange:
-                parseColor = "#FB8C00";
-                ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_yellow:
-                parseColor = "#FFEA00";
-                ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_green:
-                parseColor = "#4CAF50";
-                ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_blue:
-                parseColor = "#2196F3";
-                ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_indigo:
-                parseColor = "#3F51B5";
-                ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_violet:
-                parseColor = "#9C27B0";
-                ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
-                hideColoBar();
-                break;
-            case R.id.btn_none:
-                priority = 0;
-                btnPrioritySet.setText(getText(R.string.none_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#2196F3"));
-                btnNone.setBackgroundColor(Color.parseColor("#2196F3"));
-                btnNone.setTextColor(Color.WHITE);
-                btnLow.setBackgroundColor(Color.WHITE);
-                btnLow.setTextColor(Color.parseColor("#2196F3"));
-                btnMedium.setBackgroundColor(Color.WHITE);
-                btnMedium.setTextColor(Color.parseColor("#2196F3"));
-                btnHigh.setBackgroundColor(Color.WHITE);
-                btnHigh.setTextColor(Color.parseColor("#2196F3"));
-                hidePriorityBar();
-                break;
-            case R.id.btn_low:
-                priority = 1;
-                btnPrioritySet.setText(getText(R.string.low_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#4CAF50"));
-                btnNone.setBackgroundColor(Color.WHITE);
-                btnNone.setTextColor(Color.parseColor("#2196F3"));
-                btnLow.setBackgroundColor(Color.parseColor("#2196F3"));
-                btnLow.setTextColor(Color.WHITE);
-                btnMedium.setBackgroundColor(Color.WHITE);
-                btnMedium.setTextColor(Color.parseColor("#2196F3"));
-                btnHigh.setBackgroundColor(Color.WHITE);
-                btnHigh.setTextColor(Color.parseColor("#2196F3"));
-                hidePriorityBar();
-                break;
-            case R.id.btn_medium:
-                priority = 2;
-                btnPrioritySet.setText(getText(R.string.medium_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#FFEA00"));
-                btnNone.setBackgroundColor(Color.WHITE);
-                btnNone.setTextColor(Color.parseColor("#2196F3"));
-                btnLow.setBackgroundColor(Color.WHITE);
-                btnLow.setTextColor(Color.parseColor("#2196F3"));
-                btnMedium.setBackgroundColor(Color.parseColor("#2196F3"));
-                btnMedium.setTextColor(Color.WHITE);
-                btnHigh.setBackgroundColor(Color.WHITE);
-                btnHigh.setTextColor(Color.parseColor("#2196F3"));
-                hidePriorityBar();
-                break;
-            case R.id.btn_high:
-                priority = 3;
-                btnPrioritySet.setText(getText(R.string.high_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#FB8C00"));
-                btnNone.setBackgroundColor(Color.WHITE);
-                btnNone.setTextColor(Color.parseColor("#2196F3"));
-                btnLow.setBackgroundColor(Color.WHITE);
-                btnLow.setTextColor(Color.parseColor("#2196F3"));
-                btnMedium.setBackgroundColor(Color.WHITE);
-                btnMedium.setTextColor(Color.parseColor("#2196F3"));
-                btnHigh.setBackgroundColor(Color.parseColor("#2196F3"));
-                btnHigh.setTextColor(Color.WHITE);
-                hidePriorityBar();
-                break;
-
             case R.id.iv_setUndo:
                 redtContent.undo();
                 break;
@@ -356,6 +369,10 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    private void showColorSetBar() {
+        colorSetDialog.show();
+    }
+
 
     private void showTextFormatBar() {
         formatBar.setVisibility(View.VISIBLE);
@@ -366,39 +383,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showPriorityBar() {
-        hideTextFormatBar();
-        priorityPanel.setVisibility(View.VISIBLE);
-        edtTitle.setEnabled(false);
-        redtContent.setEnabled(false);
-        btnAlarmSet.setEnabled(false);
-        btnInfoLook.setEnabled(false);
-    }
-
-    private void hidePriorityBar() {
-        btnPrioritySet.setBackgroundColor(Color.TRANSPARENT);
-        priorityPanel.setVisibility(View.INVISIBLE);
-        edtTitle.setEnabled(true);
-        redtContent.setEnabled(true);
-        btnAlarmSet.setEnabled(true);
-        btnInfoLook.setEnabled(true);
-    }
-
-    private void showColorBar() {
-        hideTextFormatBar();
-        colorPanel.setVisibility(View.VISIBLE);
-        edtTitle.setEnabled(false);
-        redtContent.setEnabled(false);
-        btnAlarmSet.setEnabled(false);
-        btnInfoLook.setEnabled(false);
-    }
-
-    private void hideColoBar() {
-        colorPanel.setVisibility(View.INVISIBLE);
-        edtTitle.setTextColor(Color.parseColor(parseColor));
-        edtTitle.setEnabled(true);
-        redtContent.setEnabled(true);
-        btnAlarmSet.setEnabled(true);
-        btnInfoLook.setEnabled(true);
+        priorityDialog.show();
     }
 
     @Override
