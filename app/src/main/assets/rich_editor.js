@@ -205,9 +205,11 @@ RE.insertLink = function(url, title) {
 }
 
 RE.setTodo = function(text) {
-    var html = '<input type="checkbox" name="'+ text +'" value="'+ text +'"/> &nbsp;';
+    var html = '<input type="checkbox" id="action" name="'+ text +'" value="'+ text +'"/> &nbsp;';
     document.execCommand('insertHTML', false, html);
 }
+
+
 
 RE.prepareInsert = function() {
     RE.backuprange();

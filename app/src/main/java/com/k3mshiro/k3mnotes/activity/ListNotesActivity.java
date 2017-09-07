@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
@@ -342,15 +343,35 @@ public class ListNotesActivity extends AppCompatActivity implements
     private void deleteNote(int position) {
         deletedNote = mNoteAdapter.get(position);
         mNoteAdapter.remove(deletedNote);
-        noteDAO.deleteNote(deletedNote);
-        Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_LONG)
+        Snackbar snackbar = Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_LONG)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mNoteAdapter.add(deletedNote);
-                        noteDAO.createNewNote(deletedNote);
                     }
-                }).show();
+                });
+
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                if (event == DISMISS_EVENT_TIMEOUT) {
+                    noteDAO.deleteNote(deletedNote);
+                }
+            }
+        });
+
+        View sbView = snackbar.getView();
+        TextView sbText = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        if (theme.equals(LIGHTTHEME)) {
+            sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
+            sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
+        } else if (theme.equals(DARKTHEME)) {
+            sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
+            sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
+        }
+
+        snackbar.show();
     }
 
     /***************** Animation Setting **********************************/

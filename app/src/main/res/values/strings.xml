@@ -22,8 +22,8 @@
 
     <string-array name="spinner_items">
         <item>All</item>
-        <item>Favofite</item>
-        <item>Recycle Bin</item>
+        <item>Favorite</item>
+        <item>Trash</item>
     </string-array>
 
     <string name="none_priority">None</string>

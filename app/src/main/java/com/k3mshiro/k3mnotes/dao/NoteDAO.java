@@ -82,8 +82,6 @@ public class NoteDAO {
             cursor.moveToNext();
         }
 
-        closeDatabase();
-
         return listNoteDTOs;
     }
 
