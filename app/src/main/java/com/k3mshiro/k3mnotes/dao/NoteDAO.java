@@ -31,7 +31,6 @@ public class NoteDAO {
     }
 
     public boolean createNewNote(NoteDTO newNote) {
-
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(Database.COLUMN_NOTE_TITLE, newNote.getTitle());
@@ -40,6 +39,7 @@ public class NoteDAO {
         contentValues.put(Database.COLUMN_NOTE_PRIORITY, newNote.getPriority());
         contentValues.put(Database.COLUMN_NOTE_MODIFIED_DATE, newNote.getModifiedDate());
         contentValues.put(Database.COLUMN_NOTE_FAVORITE, newNote.getFavoriteValue());
+        contentValues.put(Database.COLUMN_NOTE_TIME_REMINDER, newNote.getTimeReminder());
         contentValues.put(Database.COLUMN_NOTE_COLOR, newNote.getColor());
 
         long idNhanVien = mSQLiteDB.insert(Database.TABLE_NOTE, null, contentValues);
@@ -49,7 +49,6 @@ public class NoteDAO {
 
 
     public List<NoteDTO> getAllNotes() {
-
         List<NoteDTO> listNoteDTOs = new ArrayList<>();
         String sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE;
         Cursor cursor = mSQLiteDB.rawQuery(sqlCommand, null);
@@ -62,6 +61,7 @@ public class NoteDAO {
         int modifiedDateIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_MODIFIED_DATE);
         int favoriteIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_FAVORITE);
         int priorityIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_PRIORITY);
+        int timeReminderIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TIME_REMINDER);
 
         cursor.moveToFirst();
 
@@ -74,8 +74,9 @@ public class NoteDAO {
             int priority = cursor.getInt(priorityIndex);
             String color = cursor.getString(colorIndex);
             int isFavorite = cursor.getInt(favoriteIndex);
+            long timeReminder = cursor.getLong(timeReminderIndex);
 
-            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate, isFavorite);
+            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate, isFavorite, timeReminder);
 
             listNoteDTOs.add(newNote);
 
@@ -86,7 +87,6 @@ public class NoteDAO {
     }
 
     public boolean deleteNote(NoteDTO deletedNote) {
-
         int result = mSQLiteDB.delete(Database.TABLE_NOTE, Database.COLUMN_NOTE_ID + " = " + deletedNote.getId(),
                 null);
 
@@ -95,7 +95,6 @@ public class NoteDAO {
     }
 
     public boolean editNote(NoteDTO editedNote) {
-
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(Database.COLUMN_NOTE_TITLE, editedNote.getTitle());
@@ -105,6 +104,7 @@ public class NoteDAO {
         contentValues.put(Database.COLUMN_NOTE_MODIFIED_DATE, editedNote.getModifiedDate());
         contentValues.put(Database.COLUMN_NOTE_FAVORITE, editedNote.getFavoriteValue());
         contentValues.put(Database.COLUMN_NOTE_PRIORITY, editedNote.getPriority());
+        contentValues.put(Database.COLUMN_NOTE_TIME_REMINDER, editedNote.getTimeReminder());
 
         int result = mSQLiteDB.update(Database.TABLE_NOTE,
                 contentValues,

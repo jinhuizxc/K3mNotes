@@ -19,9 +19,8 @@ public class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        String theme = getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
-        if (theme.equals(ListNotesActivity.LIGHTTHEME)) {
+        String theme = getSharedPreferences(MainActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
+        if (theme.equals(MainActivity.LIGHTTHEME)) {
             setTheme(R.style.CustomStyle_LightTheme);
         } else {
             setTheme(R.style.CustomStyle_DarkTheme);
@@ -34,7 +33,7 @@ public class SettingActivity extends AppCompatActivity {
 
         final Drawable backArrow = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_white_24dp);
         if (backArrow != null) {
-            if (theme.equals(ListNotesActivity.DARKTHEME)) {
+            if (theme.equals(MainActivity.DARKTHEME)) {
                 backArrow.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey300), PorterDuff.Mode.SRC_ATOP);
             } else {
                 backArrow.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
@@ -61,6 +60,7 @@ public class SettingActivity extends AppCompatActivity {
                     NavUtils.navigateUpFromSameTask(this);
                 }
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -11,8 +11,9 @@ public class NoteDTO implements Serializable {
     private int priority;
     private String modifiedDate;
     private int favoriteValue;
+    private long timeReminder;
 
-    public NoteDTO(int id, String title, String date, String content, String color, int priority, String modifiedDate, int favoriteValue) {
+    public NoteDTO(int id, String title, String date, String content, String color, int priority, String modifiedDate, int favoriteValue, long timeReminder) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -21,9 +22,10 @@ public class NoteDTO implements Serializable {
         this.priority = priority;
         this.modifiedDate = modifiedDate;
         this.favoriteValue = favoriteValue;
+        this.timeReminder = timeReminder;
     }
 
-    public NoteDTO(String title, String date, String content, String color, int priority, String modifiedDate, int favoriteValue) {
+    public NoteDTO(String title, String date, String content, String color, int priority, String modifiedDate, int favoriteValue, long timeReminder) {
         this.title = title;
         this.date = date;
         this.content = content;
@@ -31,6 +33,7 @@ public class NoteDTO implements Serializable {
         this.priority = priority;
         this.modifiedDate = modifiedDate;
         this.favoriteValue = favoriteValue;
+        this.timeReminder = timeReminder;
     }
 
     public int getId() {
@@ -91,6 +94,14 @@ public class NoteDTO implements Serializable {
 
     public void setFavoriteValue(int favoriteValue) {
         this.favoriteValue = favoriteValue;
+    }
+
+    public long getTimeReminder() {
+        return timeReminder;
+    }
+
+    public void setTimeReminder(long timeReminder) {
+        this.timeReminder = timeReminder;
     }
 }
 

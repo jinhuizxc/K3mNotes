@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
+import com.k3mshiro.k3mnotes.activity.MainActivity;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.text.DateFormat;
@@ -79,7 +79,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                 return note1.getId() == note2.getId();
             }
         });
-        theme = mContext.getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, Context.MODE_PRIVATE).getString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
+        theme = mContext.getSharedPreferences(MainActivity.THEME_PREFERENCES, Context.MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         if (note.getFavoriteValue() == 1) {
             holder.ivFavoriteIcon.setVisibility(View.VISIBLE);
         }
-        if (theme.equals(ListNotesActivity.LIGHTTHEME)) {
+        if (theme.equals(MainActivity.LIGHTTHEME)) {
             holder.ivFavoriteIcon.setBackgroundResource(R.drawable.amber_triangle_drawable);
         } else {
             holder.ivFavoriteIcon.setBackgroundResource(R.drawable.cyan_triangle_drawable);

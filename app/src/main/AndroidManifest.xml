@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/CustomStyle.LightTheme">
 
-        <activity android:name=".activity.ListNotesActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -22,15 +22,18 @@
 
         <activity
             android:name=".activity.CreateNoteActivity"
-            android:parentActivityName=".activity.ListNotesActivity" />
+            android:parentActivityName=".activity.MainActivity" />
 
         <activity
             android:name=".activity.EditNoteActivity"
-            android:parentActivityName=".activity.ListNotesActivity" />
+            android:parentActivityName=".activity.MainActivity" />
 
         <activity
             android:name=".activity.SettingActivity"
-            android:parentActivityName=".activity.ListNotesActivity" />
+            android:parentActivityName=".activity.MainActivity" />
+
+        <receiver android:name=".adapter.ReminderReceiver" />
+        <service android:name=".adapter.ReminderService" />
 
     </application>
 

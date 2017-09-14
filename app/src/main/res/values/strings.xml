@@ -31,5 +31,11 @@
     <string name="medium_priority">Normal</string>
     <string name="high_priority">High</string>
     <string name="iv_text_format">Textformat</string>
+    <string name="menu_remider_add">Set Time</string>
+    <string name="menu_remider_remove">Remove</string>
+    <string name="menu_remider_check_done">Done</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="reminder_text">Reminder</string>
 
 </resources>

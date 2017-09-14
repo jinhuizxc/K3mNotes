@@ -1,5 +1,6 @@
 package com.k3mshiro.k3mnotes.activity;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -30,13 +31,14 @@ public class EditNoteActivity extends BaseEditActivity {
 
     private void getData() {
         Intent intent = getIntent();
-        editedNote = (NoteDTO) intent.getSerializableExtra(ListNotesActivity.EDIT_NOTE);
+        editedNote = (NoteDTO) intent.getSerializableExtra(MainActivity.EDIT_NOTE);
         edtTitle.setText(editedNote.getTitle());
         parseColor = editedNote.getColor();
         edtTitle.setTextColor(Color.parseColor(parseColor));
         redtContent.setHtml(editedNote.getContent());
         priority = editedNote.getPriority();
         favorValue = editedNote.getFavoriteValue();
+        timeInMillis = editedNote.getTimeReminder();
 
         if (parseColor.compareTo("#F44336") == 0) {
             ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
@@ -75,6 +77,11 @@ public class EditNoteActivity extends BaseEditActivity {
         } else {
             cbFavorite.setChecked(false);
         }
+
+        if (timeInMillis > 0) {
+            String timeText = "Time set for " + getCurrentDateTime(timeInMillis);
+            tvTimeInfo.setText(timeText);
+        }
     }
 
     @Override
@@ -91,10 +98,13 @@ public class EditNoteActivity extends BaseEditActivity {
                 editNote();
                 finish();
                 break;
+
             case R.id.item_delete:
                 break;
+
             case R.id.item_statistics:
                 break;
+
             default:
                 break;
         }
@@ -107,23 +117,33 @@ public class EditNoteActivity extends BaseEditActivity {
         String newColor = parseColor;
         int newPriority = priority;
         int newFavorValue = favorValue;
+        long newTimeReminder = timeInMillis;
 
         if (editedNote.getTitle().compareTo(newTitle) == 0
                 && editedNote.getContent().compareTo(newContent) == 0
                 && editedNote.getColor().compareTo(newColor) == 0
                 && editedNote.getPriority() == newPriority
-                && editedNote.getFavoriteValue() == newFavorValue) {
+                && editedNote.getFavoriteValue() == newFavorValue
+                && editedNote.getTimeReminder() == newTimeReminder) {
             //back to list;
         } else {
             editedNote.setTitle(newTitle);
             editedNote.setContent(newContent);
-            editedNote.setModifiedDate(getDateTime());
+            editedNote.setModifiedDate(getCurrentDateTime());
             editedNote.setColor(newColor);
             editedNote.setPriority(newPriority);
             editedNote.setFavoriteValue(newFavorValue);
+            editedNote.setTimeReminder(newTimeReminder);
             boolean result = noteDAO.editNote(editedNote);
             if (result) {
                 setResult(BaseEditActivity.RESULT_CODE_SUCCESS);
+                if (timeInMillis > 0 && editedNote.getTimeReminder() != newTimeReminder) {
+                    initReminder();
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                } else {
+                    initReminder();
+                    alarmManager.cancel(pendingIntent);
+                }
             } else {
                 setResult(BaseEditActivity.RESULT_CODE_FAILURE);
             }

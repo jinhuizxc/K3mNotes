@@ -41,10 +41,10 @@ import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.util.List;
 
-public class ListNotesActivity extends AppCompatActivity implements
+public class MainActivity extends AppCompatActivity implements
         View.OnClickListener, AdapterView.OnItemSelectedListener, NoteAdapter.OnItemClickListener {
 
-    private static final String TAG = ListNotesActivity.class.getName();
+    private static final String TAG = MainActivity.class.getName();
     private static final int REQUEST_CODE_PERMISSIONS = 100;
     private static final int VERTICAL_ITEM_SPACE = 30;
     public static final int REQUEST_CODE_CREATE = 101;
@@ -145,7 +145,7 @@ public class ListNotesActivity extends AppCompatActivity implements
         noteDAO = new NoteDAO(this);
         noteDAO.openDatabase();
         noteDTOs = noteDAO.getAllNotes();
-        mNoteAdapter = new NoteAdapter(ListNotesActivity.this);
+        mNoteAdapter = new NoteAdapter(MainActivity.this);
         mNoteAdapter.addAll(noteDTOs);
         mNoteAdapter.setOnItemClickListener(this);
     }
@@ -170,7 +170,7 @@ public class ListNotesActivity extends AppCompatActivity implements
 
         rvList = (RecyclerViewEmptySupport) findViewById(R.id.cardList);
         rvList.setEmptyView(findViewById(R.id.list_empty_view));
-        LinearLayoutManager llm = new LinearLayoutManager(ListNotesActivity.this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager llm = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
         rvList.setLayoutManager(llm);
         rvList.setHasFixedSize(true); // nang cao hieu suat khi cac item cung do rong va chieu cao
         rvList.addItemDecoration(new VerticalItemSpace(VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
@@ -186,7 +186,7 @@ public class ListNotesActivity extends AppCompatActivity implements
         fabNewAlarm = (FloatingActionButton) findViewById(R.id.fab_new_alarm);
         fabNewPhoto = (FloatingActionButton) findViewById(R.id.fab_new_photo);
 
-        if (theme.equals(ListNotesActivity.DARKTHEME)) {
+        if (theme.equals(MainActivity.DARKTHEME)) {
             listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
         } else {
             listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
@@ -243,7 +243,7 @@ public class ListNotesActivity extends AppCompatActivity implements
         int id = item.getItemId();
         switch (id) {
             case R.id.item_settings:
-                Intent intent = new Intent(ListNotesActivity.this, SettingActivity.class);
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.item_about:
@@ -259,17 +259,17 @@ public class ListNotesActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_CREATE:
-                if (resultCode == CreateNoteActivity.RESULT_CODE_SUCCESS) {
+                if (resultCode == BaseEditActivity.RESULT_CODE_SUCCESS) {
                     Toasty.success(this, "New note is added successfully!", Toast.LENGTH_SHORT).show();
-                } else if (resultCode == CreateNoteActivity.RESULT_CODE_FAILURE) {
+                } else if (resultCode == BaseEditActivity.RESULT_CODE_FAILURE) {
                     Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REQUEST_CODE_EDIT:
-                if (resultCode == CreateNoteActivity.RESULT_CODE_SUCCESS) {
+                if (resultCode == BaseEditActivity.RESULT_CODE_SUCCESS) {
                     mNoteAdapter.updateItemAt(editPos, editedNote);
                     Toasty.success(this, "Apply Change!", Toast.LENGTH_SHORT).show();
-                } else if (resultCode == CreateNoteActivity.RESULT_CODE_FAILURE) {
+                } else if (resultCode == BaseEditActivity.RESULT_CODE_FAILURE) {
                     Toasty.error(this, "Couldn't edit this note! Try again!", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -328,16 +328,16 @@ public class ListNotesActivity extends AppCompatActivity implements
     /***************** Add, Remove, Edit **********************************/
 
     private void showCreateNoteScreen() {
-        Intent intentCreate = new Intent(ListNotesActivity.this, CreateNoteActivity.class);
-        startActivityForResult(intentCreate, ListNotesActivity.REQUEST_CODE_CREATE);
+        Intent intentCreate = new Intent(MainActivity.this, CreateNoteActivity.class);
+        startActivityForResult(intentCreate, MainActivity.REQUEST_CODE_CREATE);
     }
 
     private void editNote(int position) {
         editPos = position;
         editedNote = mNoteAdapter.get(position);
-        Intent intentEdit = new Intent(ListNotesActivity.this, EditNoteActivity.class);
+        Intent intentEdit = new Intent(MainActivity.this, EditNoteActivity.class);
         intentEdit.putExtra(EDIT_NOTE, editedNote);
-        startActivityForResult(intentEdit, ListNotesActivity.REQUEST_CODE_EDIT);
+        startActivityForResult(intentEdit, MainActivity.REQUEST_CODE_EDIT);
     }
 
     private void deleteNote(int position) {

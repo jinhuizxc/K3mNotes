@@ -14,10 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
+import com.k3mshiro.k3mnotes.activity.MainActivity;
 
 public class DrawerInfoFragment extends Fragment implements View.OnClickListener {
-
     public static final String KEY_CREATED_DATE = "KEY_CREATED_DATE";
     public static final String KEY_MODIFIED_DATE = "KEY_MODIFIED_DATE";
     public static final String KEY_PRIORITY = "KEY_PRIORITY";
@@ -84,23 +83,27 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
                 tvPriority.setText(getText(R.string.none_priority));
                 tvPriority.setTextColor(Color.parseColor("#2196F3"));
                 break;
+
             case 1:
                 tvPriority.setText(getText(R.string.low_priority));
                 tvPriority.setTextColor(Color.parseColor("#4CAF50"));
                 break;
+
             case 2:
                 tvPriority.setText(getText(R.string.medium_priority));
                 tvPriority.setTextColor(Color.parseColor("#FFEA00"));
                 break;
+
             case 3:
                 tvPriority.setText(getText(R.string.high_priority));
                 tvPriority.setTextColor(Color.parseColor("#FB8C00"));
                 break;
+
             default:
                 break;
         }
 
-        if (fragmentTheme.equals(ListNotesActivity.DARKTHEME)) {
+        if (fragmentTheme.equals(MainActivity.DARKTHEME)) {
             linearLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.blue_grey_500));
             btnHide.setBackgroundResource(R.drawable.ic_arrow_back_white_24dp);
         } else {

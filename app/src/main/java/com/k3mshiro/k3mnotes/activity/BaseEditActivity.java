@@ -1,10 +1,11 @@
 package com.k3mshiro.k3mnotes.activity;
 
-import android.app.Dialog;
+import android.app.AlarmManager;
 import android.app.Fragment;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,27 +22,37 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.adapter.ReminderReceiver;
 import com.k3mshiro.k3mnotes.customview.SquareButton;
 import com.k3mshiro.k3mnotes.customview.SquareImageView;
+import com.k3mshiro.k3mnotes.customview.dialog.ColorSetDialog;
+import com.k3mshiro.k3mnotes.customview.dialog.PrioritySetDialog;
+import com.k3mshiro.k3mnotes.customview.popupmenu.ReminderPopup;
 import com.k3mshiro.k3mnotes.customview.richeditor.RichEditor;
 import com.k3mshiro.k3mnotes.dao.NoteDAO;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class BaseEditActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class BaseEditActivity extends AppCompatActivity implements View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener, ColorSetDialog.OnCallBack, PrioritySetDialog.OnCallBack, ReminderPopup.OnPopupSendCalendarToActivity {
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
+    public static final int REMINDER_REQUEST_CODE = 200;
+    public static final String REMINDER_TRANSFER_KEY = "REMINDER_TRANSFER_KEY";
+    public static final String REMINDER_SET = "REMINDER_SET";
+    public static final String REMINDER_DONE = "REMINDER_DONE";
+    public static final String REMINDER_REMOVE = "REMINDER_REMOVE";
 
     protected View editSide, formatBar;
-    protected Button btnPrioritySet,
-            btnNone, btnLow, btnMedium, btnHigh;
-    protected SquareButton btnAlarmSet, btnInfoLook, btnRed, btnOrange, btnYellow,
-            btnGreen, btnBlue, btnIndigo, btnViolet;
+    protected Button btnPrioritySet;
+    protected SquareButton btnAlarmSet, btnInfoLook;
     protected SquareImageView ivColorSet, ivUndo, ivRedo, ivBold, ivItalic, ivUnderline, ivStrike,
             ivBullets, ivNumbers, ivIndent, ivOutdent, ivCbAdd;
     protected ImageView ivTextFormat;
@@ -50,7 +61,10 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     protected RichEditor redtContent;
     protected Toolbar createToolbar;
     protected CheckBox cbFavorite;
-    protected Dialog priorityDialog, colorSetDialog, textFormatDialog;
+    protected PrioritySetDialog priorityDialog;
+    protected ColorSetDialog colorSetDialog;
+    protected ReminderPopup reminderPopup;
+    protected TextView tvTimeInfo;
 
     protected String theme;
     protected NoteDAO noteDAO;
@@ -59,11 +73,15 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     protected Fragment infoFragment;
     protected int priority;
     protected int favorValue = 0;
+    protected long timeInMillis = 0;
+    protected AlarmManager alarmManager;
+    protected Intent intent;
+    protected PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        theme = getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
-        if (theme.equals(ListNotesActivity.LIGHTTHEME)) {
+        theme = getSharedPreferences(MainActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
+        if (theme.equals(MainActivity.LIGHTTHEME)) {
             setTheme(R.style.CustomStyle_LightTheme);
         } else {
             setTheme(R.style.CustomStyle_DarkTheme);
@@ -74,7 +92,15 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         initColorBar();
         initPriorityBar();
         initTextFormat();
+        initReminderPopup();
         initNotes();
+    }
+
+    protected void initReminder() {
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        intent = new Intent(getApplicationContext(), ReminderReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REMINDER_REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void initViews() {
@@ -83,7 +109,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
 
         final Drawable check = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_check_white_24dp);
         if (check != null) {
-            if (theme.equals(ListNotesActivity.DARKTHEME)) {
+            if (theme.equals(MainActivity.DARKTHEME)) {
                 check.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cyan_600), PorterDuff.Mode.SRC_ATOP);
             } else {
                 check.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
@@ -117,12 +143,11 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         ivColorSet.setOnClickListener(this);
 
         ivTextFormat = (ImageView) createToolbar.findViewById(R.id.iv_textFormat);
-        if (theme.equals(ListNotesActivity.DARKTHEME)) {
+        if (theme.equals(MainActivity.DARKTHEME)) {
             ivTextFormat.setBackgroundResource(R.drawable.lv_text_format_dark);
         }
         ivTextFormat.setVisibility(View.VISIBLE);
         ivTextFormat.setOnClickListener(this);
-
 
         edtTitle = (EditText) editSide.findViewById(R.id.edt_note_title);
         edtTitle.setTextColor(Color.parseColor(parseColor));
@@ -135,86 +160,32 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         redtContent.setPadding(8, 8, 0, 0);
         redtContent.setPlaceholder("What do you thinking about....");
 
+        tvTimeInfo = (TextView) editSide.findViewById(R.id.tv_timeInfo);
+
         fabEditNote = (FloatingActionButton) findViewById(R.id.fab_edit_note);
         fabEditNote.setOnClickListener(this);
     }
 
     private void initColorBar() {
-
-        colorSetDialog = new Dialog(BaseEditActivity.this);
-        colorSetDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        colorSetDialog.setCancelable(false);
-        colorSetDialog.setContentView(R.layout.color_bar_layout);
+        colorSetDialog = new ColorSetDialog(BaseEditActivity.this);
 
         WindowManager.LayoutParams windowLayout = colorSetDialog.getWindow()
                 .getAttributes();
         windowLayout.verticalMargin = -0.16F;
         colorSetDialog.getWindow().setAttributes(windowLayout);
 
-        btnRed = (SquareButton) colorSetDialog.findViewById(R.id.btn_red);
-        btnOrange = (SquareButton) colorSetDialog.findViewById(R.id.btn_orange);
-        btnYellow = (SquareButton) colorSetDialog.findViewById(R.id.btn_yellow);
-        btnGreen = (SquareButton) colorSetDialog.findViewById(R.id.btn_green);
-        btnBlue = (SquareButton) colorSetDialog.findViewById(R.id.btn_blue);
-        btnIndigo = (SquareButton) colorSetDialog.findViewById(R.id.btn_indigo);
-        btnViolet = (SquareButton) colorSetDialog.findViewById(R.id.btn_violet);
+        colorSetDialog.setmColorListener(this);
+    }
 
-        btnRed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#F44336";
-                ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnOrange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#FB8C00";
-                ivColorSet.setBackgroundResource(R.drawable.orange_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnYellow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#FFEA00";
-                ivColorSet.setBackgroundResource(R.drawable.yellow_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnGreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#4CAF50";
-                ivColorSet.setBackgroundResource(R.drawable.green_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnBlue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#2196F3";
-                ivColorSet.setBackgroundResource(R.drawable.blue_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnIndigo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#3F51B5";
-                ivColorSet.setBackgroundResource(R.drawable.indigo_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
-        btnViolet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parseColor = "#9C27B0";
-                ivColorSet.setBackgroundResource(R.drawable.violet_circle_bg);
-                colorSetDialog.cancel();
-            }
-        });
+    private void initPriorityBar() {
+        priorityDialog = new PrioritySetDialog(BaseEditActivity.this);
+
+        WindowManager.LayoutParams windowLayout = priorityDialog.getWindow()
+                .getAttributes();
+        windowLayout.verticalMargin = -0.17F;
+        priorityDialog.getWindow().setAttributes(windowLayout);
+
+        priorityDialog.setmPriorityListener(this);
     }
 
     private void initTextFormat() {
@@ -245,64 +216,14 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         ivCbAdd.setOnClickListener(this);
     }
 
-    private void initPriorityBar() {
-        priorityDialog = new Dialog(BaseEditActivity.this);
-        priorityDialog.setCancelable(false);
-        priorityDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        priorityDialog.setContentView(R.layout.priority_bar_layout);
-
-        WindowManager.LayoutParams windowLayout = priorityDialog.getWindow()
-                .getAttributes();
-        windowLayout.verticalMargin = -0.17F;
-        priorityDialog.getWindow().setAttributes(windowLayout);
-
-        btnNone = (Button) priorityDialog.findViewById(R.id.btn_none);
-        btnLow = (Button) priorityDialog.findViewById(R.id.btn_low);
-        btnMedium = (Button) priorityDialog.findViewById(R.id.btn_medium);
-        btnHigh = (Button) priorityDialog.findViewById(R.id.btn_high);
-
-        btnNone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                priority = 0;
-                btnPrioritySet.setText(getText(R.string.none_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#2196F3"));
-                priorityDialog.cancel();
-            }
-        });
-        btnLow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                priority = 1;
-                btnPrioritySet.setText(getText(R.string.low_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#4CAF50"));
-                priorityDialog.cancel();
-            }
-        });
-
-        btnMedium.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                priority = 2;
-                btnPrioritySet.setText(getText(R.string.medium_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#FFEA00"));
-                priorityDialog.cancel();
-            }
-        });
-        btnHigh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                priority = 3;
-                btnPrioritySet.setText(getText(R.string.high_priority));
-                btnPrioritySet.setTextColor(Color.parseColor("#FB8C00"));
-                priorityDialog.cancel();
-            }
-        });
-    }
-
     private void initNotes() {
         noteDAO = new NoteDAO(BaseEditActivity.this);
         noteDAO.openDatabase();
+    }
+
+    private void initReminderPopup() {
+        reminderPopup = new ReminderPopup(BaseEditActivity.this, btnAlarmSet);
+        reminderPopup.setmReminderListener(this);
     }
 
     @Override
@@ -313,14 +234,19 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(BaseEditActivity.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(redtContent, InputMethodManager.SHOW_IMPLICIT);
                 break;
+
             case R.id.btn_alarm_set:
+                showReminderPopup();
                 break;
+
             case R.id.iv_color_fill:
                 showColorSetBar();
                 break;
+
             case R.id.btn_priority_set:
                 showPriorityBar();
                 break;
+
             case R.id.iv_textFormat:
                 if (formatBar.getVisibility() == View.GONE) {
                     showTextFormatBar();
@@ -330,49 +256,68 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
                     ivTextFormat.setImageLevel(0);
                 }
                 break;
+
             case R.id.iv_setUndo:
                 redtContent.undo();
                 break;
+
             case R.id.iv_setRedo:
                 redtContent.redo();
                 break;
+
             case R.id.iv_setBold:
                 redtContent.setBold();
                 break;
+
             case R.id.iv_setItalic:
                 redtContent.setItalic();
                 break;
+
             case R.id.iv_setUnderline:
                 redtContent.setUnderline();
                 break;
+
             case R.id.iv_setStrikeThrough:
                 redtContent.setStrikeThrough();
                 break;
+
             case R.id.iv_insertBullet:
                 redtContent.setBullets();
                 break;
+
             case R.id.iv_insertNumber:
                 redtContent.setNumbers();
                 break;
+
             case R.id.iv_setIndent:
                 redtContent.setIndent();
                 break;
+
             case R.id.iv_setOutdent:
                 redtContent.setOutdent();
                 break;
+
             case R.id.iv_insertCheckbox:
                 redtContent.insertTodo();
                 break;
+
             default:
                 break;
         }
 
     }
 
+    private void showReminderPopup() {
+        reminderPopup.show();
+    }
+
     private void showColorSetBar() {
         colorSetDialog.show();
     }
 
+    private void showPriorityBar() {
+        priorityDialog.show();
+    }
 
     private void showTextFormatBar() {
         formatBar.setVisibility(View.VISIBLE);
@@ -380,10 +325,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
 
     private void hideTextFormatBar() {
         formatBar.setVisibility(View.GONE);
-    }
-
-    private void showPriorityBar() {
-        priorityDialog.show();
     }
 
     @Override
@@ -396,15 +337,65 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public void setColor(String parseColor) {
+        //get parseColor from ColorSetDialog
+        this.parseColor = parseColor;
+        edtTitle.setTextColor(Color.parseColor(parseColor));
+    }
+
+    @Override
+    public void setDrawableResource(int resId) {
+        //get resId from ColorSetDialog
+        ivColorSet.setBackgroundResource(resId);
+    }
+
+    @Override
+    public void setPriorityText(int textResId) {
+        //get textResId from PrioritySetDialog
+        btnPrioritySet.setText(getText(textResId));
+    }
+
+    @Override
+    public void setPriorityTextColor(String textColor) {
+        //get textColor from PrioritySetDialog
+        btnPrioritySet.setTextColor(Color.parseColor(textColor));
+    }
+
+    @Override
+    public void setPriorityValue(int priorityValue) {
+        //get priorityValue from PrioritySetDialog
+        priority = priorityValue;
+    }
+
+    @Override
+    public void sendCalendar(long timeInMillis) {
+        //get calendar from ReminderPopup
+        this.timeInMillis = timeInMillis;
+        if (timeInMillis > 0) {
+            String timeText = "Time set for " + getCurrentDateTime(timeInMillis);
+            tvTimeInfo.setText(timeText);
+        } else {
+            tvTimeInfo.setText("");
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
     }
 
-    protected String getDateTime() {
+    protected String getCurrentDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+                "dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    protected String getCurrentDateTime(long timeInMillis) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeInMillis);
+        return dateFormat.format(calendar.getTime());
     }
 }

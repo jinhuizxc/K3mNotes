@@ -1,5 +1,6 @@
 package com.k3mshiro.k3mnotes.activity;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -71,10 +72,13 @@ public class CreateNoteActivity extends BaseEditActivity {
                 createNewNote();
                 finish();
                 break;
+
             case R.id.item_delete:
                 break;
+
             case R.id.item_statistics:
                 break;
+
             default:
                 break;
         }
@@ -89,13 +93,16 @@ public class CreateNoteActivity extends BaseEditActivity {
         } else {
             content = redtContent.getHtml();
         }
-        String date = getDateTime();
-        String modifiedDate = getDateTime();
-        NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate, favorValue);
-        boolean result = noteDAO.createNewNote(newNote);
+        String date = getCurrentDateTime();
+        String modifiedDate = getCurrentDateTime();
+        NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate,
+                favorValue, timeInMillis);
 
+        boolean result = noteDAO.createNewNote(newNote);
         if (result) {
             setResult(RESULT_CODE_SUCCESS);
+            initReminder();
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
             setResult(RESULT_CODE_FAILURE);
         }

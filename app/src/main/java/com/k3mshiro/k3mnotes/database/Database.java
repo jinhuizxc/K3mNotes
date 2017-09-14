@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class Database extends SQLiteOpenHelper {
-
     public static final String DB_NAME = "NoteManagement";
     public static final int DB_VERSION = 2;
     public static final String TABLE_NOTE = "Note";
@@ -18,6 +17,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String COLUMN_NOTE_PRIORITY = "priority";
     public static final String COLUMN_NOTE_MODIFIED_DATE = "modifiedDate";
     public static final String COLUMN_NOTE_FAVORITE = "favorite";
+    public static final String COLUMN_NOTE_TIME_REMINDER = "timeReminder";
 
     public Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -33,6 +33,7 @@ public class Database extends SQLiteOpenHelper {
                 + COLUMN_NOTE_PRIORITY + " INTEGER, "
                 + COLUMN_NOTE_MODIFIED_DATE + " TEXT, "
                 + COLUMN_NOTE_FAVORITE + " INTEGER, "
+                + COLUMN_NOTE_TIME_REMINDER + " LONG, "
                 + COLUMN_NOTE_COLOR + " TEXT ); ";
 
         db.execSQL(sqlCommand);

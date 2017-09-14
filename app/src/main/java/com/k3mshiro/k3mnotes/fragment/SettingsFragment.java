@@ -7,7 +7,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.activity.ListNotesActivity;
+import com.k3mshiro.k3mnotes.activity.MainActivity;
 import com.k3mshiro.k3mnotes.dao.PreferenceKeys;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -22,16 +22,16 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         PreferenceKeys preferenceKeys = new PreferenceKeys(getResources());
         if (key.equals(preferenceKeys.night_mode_pref_key)) {
-            SharedPreferences themePreferences = getActivity().getSharedPreferences(ListNotesActivity.THEME_PREFERENCES, Context.MODE_PRIVATE);
+            SharedPreferences themePreferences = getActivity().getSharedPreferences(MainActivity.THEME_PREFERENCES, Context.MODE_PRIVATE);
             SharedPreferences.Editor themeEditor = themePreferences.edit();
-            //We tell our MainLayout to recreate itself because mode has changed
-            themeEditor.putBoolean(ListNotesActivity.RECREATE_ACTIVITY, true);
+            //Tell MainLayout to recreate itself because mode has changed
+            themeEditor.putBoolean(MainActivity.RECREATE_ACTIVITY, true);
 
             CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference(preferenceKeys.night_mode_pref_key);
             if (checkBoxPreference.isChecked()) {
-                themeEditor.putString(ListNotesActivity.THEME_SAVED, ListNotesActivity.DARKTHEME);
+                themeEditor.putString(MainActivity.THEME_SAVED, MainActivity.DARKTHEME);
             } else {
-                themeEditor.putString(ListNotesActivity.THEME_SAVED, ListNotesActivity.LIGHTTHEME);
+                themeEditor.putString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
             }
             themeEditor.apply();
 
