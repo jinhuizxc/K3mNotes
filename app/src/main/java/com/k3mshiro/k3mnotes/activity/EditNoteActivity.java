@@ -1,6 +1,5 @@
 package com.k3mshiro.k3mnotes.activity;
 
-import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.adapter.ReminderAdapter;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 
@@ -26,10 +26,10 @@ public class EditNoteActivity extends BaseEditActivity {
                 showNoteInfo();
             }
         });
-        getData();
+        getNoteDatas();
     }
 
-    private void getData() {
+    private void getNoteDatas() {
         Intent intent = getIntent();
         editedNote = (NoteDTO) intent.getSerializableExtra(MainActivity.EDIT_NOTE);
         edtTitle.setText(editedNote.getTitle());
@@ -39,6 +39,7 @@ public class EditNoteActivity extends BaseEditActivity {
         priority = editedNote.getPriority();
         favorValue = editedNote.getFavoriteValue();
         timeInMillis = editedNote.getTimeReminder();
+        reminderId = editedNote.getReminderId();
 
         if (parseColor.compareTo("#F44336") == 0) {
             ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
@@ -137,12 +138,14 @@ public class EditNoteActivity extends BaseEditActivity {
             boolean result = noteDAO.editNote(editedNote);
             if (result) {
                 setResult(BaseEditActivity.RESULT_CODE_SUCCESS);
-                if (timeInMillis > 0 && editedNote.getTimeReminder() != newTimeReminder) {
-                    initReminder();
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-                } else {
-                    initReminder();
-                    alarmManager.cancel(pendingIntent);
+                if (timeInMillis > 0) {
+                    ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(),
+                            reminderId, timeInMillis, editedNote.getTitle(), editedNote.getContent());
+                    reminderAdapter.registerReminder();
+                } else if (timeInMillis == -1 || timeInMillis == 0) {
+                    ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(),
+                            reminderId, timeInMillis, editedNote.getTitle(), editedNote.getContent());
+                    reminderAdapter.unregisterReminder();
                 }
             } else {
                 setResult(BaseEditActivity.RESULT_CODE_FAILURE);

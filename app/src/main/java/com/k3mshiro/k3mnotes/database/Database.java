@@ -18,6 +18,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String COLUMN_NOTE_MODIFIED_DATE = "modifiedDate";
     public static final String COLUMN_NOTE_FAVORITE = "favorite";
     public static final String COLUMN_NOTE_TIME_REMINDER = "timeReminder";
+    public static final String COLUMN_NOTE_REMINDER_ID = "reminderId";
 
     public Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -28,6 +29,7 @@ public class Database extends SQLiteOpenHelper {
         String sqlCommand = "CREATE TABLE " + TABLE_NOTE
                 + " ( " + COLUMN_NOTE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NOTE_TITLE + " TEXT, "
+                + COLUMN_NOTE_REMINDER_ID + " INTEGER, "
                 + COLUMN_NOTE_DATE + " TEXT, "
                 + COLUMN_NOTE_CONTENT + " TEXT, "
                 + COLUMN_NOTE_PRIORITY + " INTEGER, "

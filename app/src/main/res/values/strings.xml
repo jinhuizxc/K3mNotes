@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Notes And Reminder</string>
+    <string name="app_name">Note Down</string>
     <string name="new_note_title_hint">Title</string>
     <string name="tbr_name">Setting</string>
     <string name="new_note_content_hint">What are you thinking about?</string>

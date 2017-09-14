@@ -1,9 +1,6 @@
 package com.k3mshiro.k3mnotes.activity;
 
-import android.app.AlarmManager;
 import android.app.Fragment;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -25,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.adapter.ReminderReceiver;
 import com.k3mshiro.k3mnotes.customview.SquareButton;
 import com.k3mshiro.k3mnotes.customview.SquareImageView;
 import com.k3mshiro.k3mnotes.customview.dialog.ColorSetDialog;
@@ -44,11 +40,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         CompoundButton.OnCheckedChangeListener, ColorSetDialog.OnCallBack, PrioritySetDialog.OnCallBack, ReminderPopup.OnPopupSendCalendarToActivity {
     public static final int RESULT_CODE_SUCCESS = 1000;
     public static final int RESULT_CODE_FAILURE = 1001;
-    public static final int REMINDER_REQUEST_CODE = 200;
-    public static final String REMINDER_TRANSFER_KEY = "REMINDER_TRANSFER_KEY";
-    public static final String REMINDER_SET = "REMINDER_SET";
-    public static final String REMINDER_DONE = "REMINDER_DONE";
-    public static final String REMINDER_REMOVE = "REMINDER_REMOVE";
 
     protected View editSide, formatBar;
     protected Button btnPrioritySet;
@@ -74,9 +65,7 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
     protected int priority;
     protected int favorValue = 0;
     protected long timeInMillis = 0;
-    protected AlarmManager alarmManager;
-    protected Intent intent;
-    protected PendingIntent pendingIntent;
+    protected int reminderId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,13 +83,6 @@ public class BaseEditActivity extends AppCompatActivity implements View.OnClickL
         initTextFormat();
         initReminderPopup();
         initNotes();
-    }
-
-    protected void initReminder() {
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        intent = new Intent(getApplicationContext(), ReminderReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), REMINDER_REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void initViews() {

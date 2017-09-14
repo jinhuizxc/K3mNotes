@@ -40,6 +40,7 @@ public class NoteDAO {
         contentValues.put(Database.COLUMN_NOTE_MODIFIED_DATE, newNote.getModifiedDate());
         contentValues.put(Database.COLUMN_NOTE_FAVORITE, newNote.getFavoriteValue());
         contentValues.put(Database.COLUMN_NOTE_TIME_REMINDER, newNote.getTimeReminder());
+        contentValues.put(Database.COLUMN_NOTE_REMINDER_ID, newNote.getReminderId());
         contentValues.put(Database.COLUMN_NOTE_COLOR, newNote.getColor());
 
         long idNhanVien = mSQLiteDB.insert(Database.TABLE_NOTE, null, contentValues);
@@ -62,6 +63,7 @@ public class NoteDAO {
         int favoriteIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_FAVORITE);
         int priorityIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_PRIORITY);
         int timeReminderIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TIME_REMINDER);
+        int reminderIdIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_REMINDER_ID);
 
         cursor.moveToFirst();
 
@@ -75,8 +77,9 @@ public class NoteDAO {
             String color = cursor.getString(colorIndex);
             int isFavorite = cursor.getInt(favoriteIndex);
             long timeReminder = cursor.getLong(timeReminderIndex);
+            int reminderId = cursor.getInt(reminderIdIndex);
 
-            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate, isFavorite, timeReminder);
+            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate, isFavorite, timeReminder, reminderId);
 
             listNoteDTOs.add(newNote);
 

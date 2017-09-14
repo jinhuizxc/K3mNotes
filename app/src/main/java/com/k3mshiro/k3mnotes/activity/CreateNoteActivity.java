@@ -1,6 +1,5 @@
 package com.k3mshiro.k3mnotes.activity;
 
-import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -10,8 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.adapter.ReminderAdapter;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
+
+import java.util.Random;
 
 public class CreateNoteActivity extends BaseEditActivity {
 
@@ -33,6 +35,8 @@ public class CreateNoteActivity extends BaseEditActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Random rd = new Random();
+        reminderId = rd.nextInt();
         btnInfoLook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,13 +100,16 @@ public class CreateNoteActivity extends BaseEditActivity {
         String date = getCurrentDateTime();
         String modifiedDate = getCurrentDateTime();
         NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate,
-                favorValue, timeInMillis);
+                favorValue, timeInMillis, reminderId);
 
         boolean result = noteDAO.createNewNote(newNote);
         if (result) {
             setResult(RESULT_CODE_SUCCESS);
-            initReminder();
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+            if (timeInMillis > 0) {
+                ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(), reminderId,
+                        timeInMillis, title, content);
+                reminderAdapter.registerReminder();
+            }
         } else {
             setResult(RESULT_CODE_FAILURE);
         }
