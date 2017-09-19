@@ -2,10 +2,12 @@ package com.k3mshiro.k3mnotes.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +18,7 @@ import com.k3mshiro.k3mnotes.dto.NoteDTO;
 import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
 
 public class EditNoteActivity extends BaseEditActivity {
+    private long currentTimeMillis;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +43,8 @@ public class EditNoteActivity extends BaseEditActivity {
         favorValue = editedNote.getFavoriteValue();
         timeInMillis = editedNote.getTimeReminder();
         reminderId = editedNote.getReminderId();
+
+        currentTimeMillis = timeInMillis;
 
         if (parseColor.compareTo("#F44336") == 0) {
             ivColorSet.setBackgroundResource(R.drawable.red_circle_bg);
@@ -101,9 +106,26 @@ public class EditNoteActivity extends BaseEditActivity {
                 break;
 
             case R.id.item_delete:
-                break;
-
-            case R.id.item_statistics:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Delete: " + editedNote.getTitle());
+                builder.setMessage("Are you sure you want to delete this note?");
+                builder.setIcon(R.drawable.do_note_icon);
+                builder.setCancelable(false);
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setResult(RESULT_CODE_DELETE);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.create();
+                builder.show();
                 break;
 
             default:
@@ -118,6 +140,7 @@ public class EditNoteActivity extends BaseEditActivity {
         String newColor = parseColor;
         int newPriority = priority;
         int newFavorValue = favorValue;
+
         long newTimeReminder = timeInMillis;
 
         if (editedNote.getTitle().compareTo(newTitle) == 0
@@ -138,7 +161,7 @@ public class EditNoteActivity extends BaseEditActivity {
             boolean result = noteDAO.editNote(editedNote);
             if (result) {
                 setResult(BaseEditActivity.RESULT_CODE_SUCCESS);
-                if (timeInMillis > 0) {
+                if (timeInMillis > 0 && editedNote.getTimeReminder() != currentTimeMillis) {
                     ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(),
                             reminderId, timeInMillis, editedNote.getTitle(), editedNote.getContent());
                     reminderAdapter.registerReminder();

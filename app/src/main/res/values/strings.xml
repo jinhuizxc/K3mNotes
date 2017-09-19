@@ -5,11 +5,17 @@
     <string name="new_note_content_hint">What are you thinking about?</string>
     <string name="toast_message">Toast message</string>
     <string name="no_note">Let\'s create your note</string>
-    <string name="menu_list_setting">Settings</string>
-    <string name="menu_list_about">About</string>
-    <string name="menu_create_delete">Delete</string>
-    <string name="menu_create_statistics">Statistics</string>
     <string name="no_to_dos">You don\'t have any notes</string>
+    <string name="no_trash">Trash bin is empty</string>
+
+    <string name="menu_list_setting">Settings</string>
+    <string name="menu_list_trash">Trash Bin</string>
+    <string name="menu_list_arrange">Arrange By</string>
+    <string name="menu_list_view_option">View Option</string>
+    <string name="menu_list_about">About</string>
+
+    <string name="menu_create_delete">Delete</string>
+
     <string name="lbl_modified_date">Modified Date:</string>
     <string name="lbl_created_date">Created Date:</string>
     <string name="lbl_color">Color:</string>
@@ -20,22 +26,35 @@
     <string name="night_mode_off_summary">Night mode is off</string>
     <string name="menu_create_cbFavor">favorite</string>
 
-    <string-array name="spinner_items">
-        <item>All</item>
-        <item>Favorite</item>
-        <item>Trash</item>
-    </string-array>
-
     <string name="none_priority">None</string>
     <string name="low_priority">Low</string>
     <string name="medium_priority">Normal</string>
     <string name="high_priority">High</string>
+
     <string name="iv_text_format">Textformat</string>
+
     <string name="menu_remider_add">Set Time</string>
     <string name="menu_remider_remove">Remove</string>
     <string name="menu_remider_check_done">Done</string>
-    <string name="btn_cancel">Cancel</string>
-    <string name="btn_save">Save</string>
-    <string name="reminder_text">Reminder</string>
 
+    <string name="reminder_dialog_title">Reminder</string>
+    <string name="reminder_dialog_reminder_dialog_date_hint">Date</string>
+    <string name="reminder_dialog_time_hint">Time</string>
+    <string name="reminder_dialog_btn_cancel">Cancel</string>
+    <string name="reminder_dialog_btn_save">Save</string>
+
+    <string name="made_by_text">Made by K3mShIrO</string>
+    <string name="lbl_about_contact_text">Please contact me at</string>
+    <string name="email_address">i.am.nguyentuanlinh@gmail.com</string>
+    <string name="menu_context_trash_delete">Delete Forever</string>
+    <string name="menu_context_trash_putback">Put Back</string>
+    <string name="trash_activity_name">Trash Bin</string>
+    <string name="setting_activity_name">Settings</string>
+    <string name="view_option_dialog_title">View Option</string>
+
+    <string name="view_mode_title">View Mode</string>
+    <string name="view_mode_all">All</string>
+    <string name="view_mode_favorite">Favorite</string>
+    <string name="view_mode_reminder">Reminder</string>
+    <string name="empty_trash_title">Empty Trash</string>
 </resources>

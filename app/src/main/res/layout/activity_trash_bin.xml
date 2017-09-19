@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listTrash_act"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/trash_toolbar"
+        layout="@layout/create_toolbar" />
+
+    <include
+        android:id="@+id/list_empty_trash"
+        layout="@layout/list_empty_trash" />
+
+    <com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport
+        android:id="@+id/listTrash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/trash_toolbar"
+        android:layout_margin="@dimen/activity_horizontal_margin" />
+
+</RelativeLayout>

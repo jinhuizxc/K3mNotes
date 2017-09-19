@@ -35,6 +35,14 @@
         <receiver android:name=".adapter.ReminderReceiver" />
         <service android:name=".adapter.ReminderService" />
 
+        <activity
+            android:name=".activity.AboutActivity"
+            android:parentActivityName=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.TrashActivity"
+            android:parentActivityName=".activity.MainActivity" />
+
     </application>
 
 </manifest>

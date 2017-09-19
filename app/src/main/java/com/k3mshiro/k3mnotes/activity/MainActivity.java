@@ -18,20 +18,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.adapter.ModifiedDateSortedAdapter;
 import com.k3mshiro.k3mnotes.adapter.NoteAdapter;
 import com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport;
 import com.k3mshiro.k3mnotes.customview.recycleview.VerticalItemSpace;
@@ -41,24 +40,27 @@ import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener, AdapterView.OnItemSelectedListener, NoteAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NoteAdapter.OnItemClickListener {
 
     private static final String TAG = MainActivity.class.getName();
     private static final int REQUEST_CODE_PERMISSIONS = 100;
-    private static final int VERTICAL_ITEM_SPACE = 30;
-    public static final int REQUEST_CODE_CREATE = 101;
-    public static final String EDIT_NOTE = "EDIT_NOTE";
+    public static final int VERTICAL_ITEM_SPACE = 30;
     public static final int REQUEST_CODE_EDIT = 102;
-
+    public static final int REQUEST_CODE_TRASH = 103;
+    public static final String EDIT_NOTE = "EDIT_NOTE";
     public static final String THEME_PREFERENCES = "THEME_PREFERENCES";
+    public static final String VIEW_PREFERENCES = "VIEW_PREFERENCES";
     public static final String RECREATE_ACTIVITY = "RECREATE_ACTIVITY";
     public static final String THEME_SAVED = "THEME_SAVED";
+    public static final String VIEWMODE_SAVED = "VIEWMODE_SAVED";
     public static final String DARKTHEME = "DARKTHEME";
     public static final String LIGHTTHEME = "LIGHTTHEME";
+    public static final String ALLMODE = "ALLMODE";
+    public static final String FAVORITEMODE = "FAVORITEMODE";
+    public static final String REMINDERMODE = "REMINDERMODE";
     private String theme = "name_of_the_theme";
+    private String viewMode = "name_of_view_mode";
     private int mTheme = -1;
-
 
     private Toolbar listToolbar;
     private RecyclerViewEmptySupport rvList;
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements
     private FloatingActionButton fabNewPhoto;
     private FloatingActionButton fabNewAlarm;
     private RelativeLayout rltListNote;
-    private Spinner spinner;
 
     private NoteAdapter mNoteAdapter;
     private List<NoteDTO> noteDTOs;
@@ -84,13 +85,17 @@ public class MainActivity extends AppCompatActivity implements
             editor.putBoolean(RECREATE_ACTIVITY, false);
             editor.apply();
             recreate();
+        } else if (getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
+            SharedPreferences.Editor editor = getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).edit();
+            editor.putBoolean(RECREATE_ACTIVITY, false);
+            editor.apply();
+            recreate();
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         theme = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getString(THEME_SAVED, LIGHTTHEME);
-
         if (theme.equals(LIGHTTHEME)) {
             mTheme = R.style.CustomStyle_LightTheme;
         } else {
@@ -144,8 +149,17 @@ public class MainActivity extends AppCompatActivity implements
     private void initNotes() {
         noteDAO = new NoteDAO(this);
         noteDAO.openDatabase();
-        noteDTOs = noteDAO.getAllNotes();
-        mNoteAdapter = new NoteAdapter(MainActivity.this);
+        mNoteAdapter = new ModifiedDateSortedAdapter(MainActivity.this);
+
+        viewMode = getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).getString(VIEWMODE_SAVED, ALLMODE);
+        if (viewMode.equals(ALLMODE)) {
+            noteDTOs = noteDAO.getAllNotes(1);
+        } else if (viewMode.equals(FAVORITEMODE)) {
+            noteDTOs = noteDAO.getAllNotes(2);
+        } else if (viewMode.equals(REMINDERMODE)) {
+            noteDTOs = noteDAO.getAllNotes(3);
+        }
+
         mNoteAdapter.addAll(noteDTOs);
         mNoteAdapter.setOnItemClickListener(this);
     }
@@ -158,15 +172,12 @@ public class MainActivity extends AppCompatActivity implements
 
         if (getSupportActionBar() != null) {
             ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(false);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                actionBar.setTitle(Html.fromHtml("<font face='monospace' color='#FFFFFF'>All Notes</font>", Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                actionBar.setTitle(Html.fromHtml("<font face='monospace' color='#FFFFFF'>All Notes</font>"));
+            }
         }
-
-        spinner = (Spinner) listToolbar.findViewById(R.id.spinner_nav);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.spinner_items, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
 
         rvList = (RecyclerViewEmptySupport) findViewById(R.id.cardList);
         rvList.setEmptyView(findViewById(R.id.list_empty_view));
@@ -174,12 +185,6 @@ public class MainActivity extends AppCompatActivity implements
         rvList.setLayoutManager(llm);
         rvList.setHasFixedSize(true); // nang cao hieu suat khi cac item cung do rong va chieu cao
         rvList.addItemDecoration(new VerticalItemSpace(VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
-        /* them divider
-        rvList.addItemDecoration(new DividerItem(this));
-        //or
-        rvList.addItemDecoration(
-                new DividerItem(this, R.drawable.divider));
-         */
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
@@ -228,11 +233,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list, menu);
         return true;
@@ -243,11 +243,20 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
         switch (id) {
             case R.id.item_settings:
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.item_about:
+                Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intentSetting);
                 break;
+
+            case R.id.item_about:
+                Intent intentAbout = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intentAbout);
+                break;
+
+            case R.id.item_trash:
+                Intent intentTrash = new Intent(MainActivity.this, TrashActivity.class);
+                startActivityForResult(intentTrash, REQUEST_CODE_TRASH);
+                break;
+
             default:
                 break;
         }
@@ -258,20 +267,23 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_CREATE:
-                if (resultCode == BaseEditActivity.RESULT_CODE_SUCCESS) {
-                    Toasty.success(this, "New note is added successfully!", Toast.LENGTH_SHORT).show();
-                } else if (resultCode == BaseEditActivity.RESULT_CODE_FAILURE) {
-                    Toasty.error(this, "Couldn't create new note! Try again!", Toast.LENGTH_SHORT).show();
-                }
-                break;
             case REQUEST_CODE_EDIT:
                 if (resultCode == BaseEditActivity.RESULT_CODE_SUCCESS) {
                     mNoteAdapter.updateItemAt(editPos, editedNote);
-                    Toasty.success(this, "Apply Change!", Toast.LENGTH_SHORT).show();
-                } else if (resultCode == BaseEditActivity.RESULT_CODE_FAILURE) {
-                    Toasty.error(this, "Couldn't edit this note! Try again!", Toast.LENGTH_SHORT).show();
+                } else if (resultCode == BaseEditActivity.RESULT_CODE_DELETE) {
+                    mNoteAdapter.remove(editedNote);
+                    noteDAO.deleteNote(editedNote);
+                    noteDAO.updateToTrash(editedNote, 1);
+                    Toasty.success(this, "Delete Successfully!", Toast.LENGTH_SHORT).show();
                 }
+                break;
+
+            case REQUEST_CODE_TRASH:
+                if (resultCode == TrashActivity.RESULT_CODE_PUTBACK) {
+                    mNoteAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
                 break;
         }
     }
@@ -314,22 +326,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /****************************Spinner item selected*************************/
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
     /***************** Add, Remove, Edit **********************************/
 
     private void showCreateNoteScreen() {
         Intent intentCreate = new Intent(MainActivity.this, CreateNoteActivity.class);
-        startActivityForResult(intentCreate, MainActivity.REQUEST_CODE_CREATE);
+        startActivity(intentCreate);
     }
 
     private void editNote(int position) {
@@ -343,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements
     private void deleteNote(int position) {
         deletedNote = mNoteAdapter.get(position);
         mNoteAdapter.remove(deletedNote);
-        Snackbar snackbar = Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_LONG)
+        Snackbar snackbar = Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_SHORT)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -356,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
                 if (event == DISMISS_EVENT_TIMEOUT) {
-                    noteDAO.deleteNote(deletedNote);
+                    noteDAO.updateToTrash(deletedNote, 1);
                 }
             }
         });

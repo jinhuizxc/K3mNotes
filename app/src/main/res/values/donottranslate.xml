@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="night_mode_pref_key" translatable="false">NightModePreference</string>
-    <string name="all_mode_pref_key" translatable="false">AllMode</string>
-    <string name="modified_date_mode_pref_key" translatable="false">ModifiedDateMode</string>
-    <string name="priority_mode_pref_key" translatable="false">PriorityMode</string>
+    <string name="view_mode_pref_key" translatable="false">ViewModePreference</string>
+
 </resources>

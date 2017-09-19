@@ -78,9 +78,7 @@ public class CreateNoteActivity extends BaseEditActivity {
                 break;
 
             case R.id.item_delete:
-                break;
-
-            case R.id.item_statistics:
+                finish();
                 break;
 
             default:
@@ -104,14 +102,11 @@ public class CreateNoteActivity extends BaseEditActivity {
 
         boolean result = noteDAO.createNewNote(newNote);
         if (result) {
-            setResult(RESULT_CODE_SUCCESS);
             if (timeInMillis > 0) {
                 ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(), reminderId,
                         timeInMillis, title, content);
                 reminderAdapter.registerReminder();
             }
-        } else {
-            setResult(RESULT_CODE_FAILURE);
         }
     }
 }

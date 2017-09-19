@@ -36,9 +36,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class BaseEditActivity extends AppCompatActivity implements View.OnClickListener,
+public abstract class BaseEditActivity extends AppCompatActivity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, ColorSetDialog.OnCallBack, PrioritySetDialog.OnCallBack, ReminderPopup.OnPopupSendCalendarToActivity {
     public static final int RESULT_CODE_SUCCESS = 1000;
+    public static final int RESULT_CODE_DELETE = 1002;
     public static final int RESULT_CODE_FAILURE = 1001;
 
     protected View editSide, formatBar;

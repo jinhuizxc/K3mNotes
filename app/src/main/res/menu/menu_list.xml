@@ -7,7 +7,14 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/item_trash"
+        android:title="@string/menu_list_trash"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/item_about"
         android:title="@string/menu_list_about"
         app:showAsAction="never" />
+
+
 </menu>

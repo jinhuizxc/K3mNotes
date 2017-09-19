@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.MenuItem;
 
 import com.k3mshiro.k3mnotes.R;
@@ -30,13 +31,12 @@ public class SettingActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
         setSupportActionBar(toolbar);
 
-
         final Drawable backArrow = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_white_24dp);
         if (backArrow != null) {
             if (theme.equals(MainActivity.DARKTHEME)) {
                 backArrow.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey300), PorterDuff.Mode.SRC_ATOP);
             } else {
-                backArrow.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                backArrow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
             }
 
         }
@@ -45,7 +45,17 @@ public class SettingActivity extends AppCompatActivity {
             ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(backArrow);
-            actionBar.setDisplayShowTitleEnabled(false);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                actionBar.setTitle(Html.fromHtml("<font face='monospace' color='#FFFFFF'>Settings</font>", Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                actionBar.setTitle(Html.fromHtml("<font face='monospace' color='#FFFFFF'>Settings</font>"));
+            }
+        }
+
+        if (theme.equals(MainActivity.DARKTHEME)) {
+            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
+        } else {
+            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
         }
 
         FragmentManager fm = getFragmentManager();

@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/item_add_reminder"
         android:icon="@drawable/ic_date_range_grey_600_24dp"
-        android:title="@string/menu_remider_add" />
+        android:title="@string/menu_remider_add"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/item_check_done_reminder"
         android:icon="@drawable/ic_check_grey_600_24dp"
-        android:title="@string/menu_remider_check_done" />
+        android:title="@string/menu_remider_check_done"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/item_remove_reminder"
         android:icon="@drawable/ic_clear_grey_600_24dp"
-        android:title="@string/menu_remider_remove" />
+        android:title="@string/menu_remider_remove"
+        app:showAsAction="never" />
 
 </menu>

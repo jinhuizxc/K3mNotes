@@ -13,9 +13,10 @@ public class NoteDTO implements Serializable {
     private int favoriteValue;
     private long timeReminder;
     private int reminderId;
+    private int isInTrash;
 
     public NoteDTO(int id, String title, String date, String content, String color, int priority,
-                   String modifiedDate, int favoriteValue, long timeReminder, int reminderId) {
+                   String modifiedDate, int favoriteValue, long timeReminder, int reminderId, int isInTrash) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -26,6 +27,21 @@ public class NoteDTO implements Serializable {
         this.favoriteValue = favoriteValue;
         this.timeReminder = timeReminder;
         this.reminderId = reminderId;
+        this.isInTrash = isInTrash;
+    }
+
+    public NoteDTO(String title, String date, String content, String color, int priority,
+                   String modifiedDate, int favoriteValue, long timeReminder, int reminderId, int isInTrash) {
+        this.title = title;
+        this.date = date;
+        this.content = content;
+        this.color = color;
+        this.priority = priority;
+        this.modifiedDate = modifiedDate;
+        this.favoriteValue = favoriteValue;
+        this.timeReminder = timeReminder;
+        this.reminderId = reminderId;
+        this.isInTrash = isInTrash;
     }
 
     public NoteDTO(String title, String date, String content, String color, int priority,
@@ -59,6 +75,10 @@ public class NoteDTO implements Serializable {
 
     public String getDate() {
         return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getContent() {
@@ -111,6 +131,18 @@ public class NoteDTO implements Serializable {
 
     public int getReminderId() {
         return reminderId;
+    }
+
+    public void setReminderId(int reminderId) {
+        this.reminderId = reminderId;
+    }
+
+    public int isInTrash() {
+        return isInTrash;
+    }
+
+    public void setInTrash(int inTrash) {
+        isInTrash = inTrash;
     }
 }
 

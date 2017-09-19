@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+public abstract class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
     private final String theme;
-    private SortedList<NoteDTO> sortedNotes;
+    protected SortedList<NoteDTO> sortedNotes;
     private static OnItemClickListener listener;
     private LayoutInflater mLayoutInflater;
     private Context mContext;
@@ -41,44 +41,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public NoteAdapter(Context mContext) {
         this.mContext = mContext;
         mLayoutInflater = LayoutInflater.from(mContext);
-        sortedNotes = new SortedList<>(NoteDTO.class, new SortedList.Callback<NoteDTO>() {
-            @Override
-            public void onInserted(int position, int count) {
-                notifyItemRangeInserted(position, count);
-            }
-
-            @Override
-            public void onRemoved(int position, int count) {
-                notifyItemRangeRemoved(position, count);
-            }
-
-            @Override
-            public void onMoved(int fromPosition, int toPosition) {
-                notifyItemMoved(fromPosition, toPosition);
-            }
-
-            @Override
-            public int compare(NoteDTO note1, NoteDTO note2) {
-                Date date1 = dateStringConverter(note1.getModifiedDate());
-                Date date2 = dateStringConverter(note2.getModifiedDate());
-                return date2.compareTo(date1);
-            }
-
-            @Override
-            public void onChanged(int position, int count) {
-                notifyItemRangeChanged(position, count);
-            }
-
-            @Override
-            public boolean areContentsTheSame(NoteDTO oldItem, NoteDTO newItem) {
-                return false;
-            }
-
-            @Override
-            public boolean areItemsTheSame(NoteDTO note1, NoteDTO note2) {
-                return note1.getId() == note2.getId();
-            }
-        });
         theme = mContext.getSharedPreferences(MainActivity.THEME_PREFERENCES, Context.MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
     }
 
@@ -103,11 +65,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         if (note.getFavoriteValue() == 1) {
             holder.ivFavoriteIcon.setVisibility(View.VISIBLE);
         }
+        if (note.getTimeReminder() > 0) {
+            holder.ivReminderIcon.setVisibility(View.VISIBLE);
+        }
         if (theme.equals(MainActivity.LIGHTTHEME)) {
             holder.ivFavoriteIcon.setBackgroundResource(R.drawable.amber_triangle_drawable);
+            holder.ivReminderIcon.setBackgroundResource(R.drawable.ic_alarm_on_amber_a700_24dp);
         } else {
             holder.ivFavoriteIcon.setBackgroundResource(R.drawable.cyan_triangle_drawable);
+            holder.ivReminderIcon.setBackgroundResource(R.drawable.ic_alarm_on_cyan_600_24dp);
         }
+
+        holder.itemView.setLongClickable(true);
     }
 
     @Override
@@ -117,6 +86,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     class NoteViewHolder extends RecyclerView.ViewHolder {
         private ImageView ivFavoriteIcon;
+        private ImageView ivReminderIcon;
         private TextView tvDate;
         private TextView tvContent;
         private TextView tvTitle;
@@ -127,6 +97,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             tvContent = (TextView) itemView.findViewById(R.id.tvContent);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
             ivFavoriteIcon = (ImageView) itemView.findViewById(R.id.favorite_icon);
+            ivReminderIcon = (ImageView) itemView.findViewById(R.id.reminder_icon);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -183,7 +154,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         sortedNotes.endBatchedUpdates();
     }
 
-    private Date dateStringConverter(String dateString) {
+    protected Date dateStringConverter(String dateString) {
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
         Date date = null;
         try {
@@ -193,4 +164,5 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         }
         return date;
     }
+
 }

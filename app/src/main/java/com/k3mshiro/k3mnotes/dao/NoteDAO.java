@@ -42,6 +42,7 @@ public class NoteDAO {
         contentValues.put(Database.COLUMN_NOTE_TIME_REMINDER, newNote.getTimeReminder());
         contentValues.put(Database.COLUMN_NOTE_REMINDER_ID, newNote.getReminderId());
         contentValues.put(Database.COLUMN_NOTE_COLOR, newNote.getColor());
+        contentValues.put(Database.COLUMN_NOTE_IS_IN_TRASH, 0);
 
         long idNhanVien = mSQLiteDB.insert(Database.TABLE_NOTE, null, contentValues);
 
@@ -49,11 +50,30 @@ public class NoteDAO {
     }
 
 
-    public List<NoteDTO> getAllNotes() {
+    public List<NoteDTO> getAllNotes(int viewMode) {
         List<NoteDTO> listNoteDTOs = new ArrayList<>();
-        String sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE;
+        String sqlCommand = "";
+        switch (viewMode) {
+            case 1:
+                sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE + " WHERE " +
+                        Database.COLUMN_NOTE_IS_IN_TRASH + " = 0";
+                break;
+            case 2:
+                sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE + " WHERE " +
+                        Database.COLUMN_NOTE_IS_IN_TRASH + " = 0 and "
+                        + Database.COLUMN_NOTE_FAVORITE + " = 1";
+                break;
+            case 3:
+                sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE + " WHERE " +
+                        Database.COLUMN_NOTE_IS_IN_TRASH + " = 0 and "
+                        + Database.COLUMN_NOTE_TIME_REMINDER + " > 0";
+                break;
+            default:
+                sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE + " WHERE " +
+                        Database.COLUMN_NOTE_IS_IN_TRASH + " = 0";
+                break;
+        }
         Cursor cursor = mSQLiteDB.rawQuery(sqlCommand, null);
-
         int idIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_ID);
         int titleIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TITLE);
         int dateIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_DATE);
@@ -64,6 +84,7 @@ public class NoteDAO {
         int priorityIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_PRIORITY);
         int timeReminderIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TIME_REMINDER);
         int reminderIdIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_REMINDER_ID);
+        int isInTrashIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_IS_IN_TRASH);
 
         cursor.moveToFirst();
 
@@ -78,8 +99,55 @@ public class NoteDAO {
             int isFavorite = cursor.getInt(favoriteIndex);
             long timeReminder = cursor.getLong(timeReminderIndex);
             int reminderId = cursor.getInt(reminderIdIndex);
+            int isInTrash = cursor.getInt(isInTrashIndex);
 
-            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate, isFavorite, timeReminder, reminderId);
+            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate,
+                    isFavorite, timeReminder, reminderId, isInTrash);
+
+            listNoteDTOs.add(newNote);
+
+            cursor.moveToNext();
+        }
+
+        return listNoteDTOs;
+    }
+
+
+    public List<NoteDTO> getNotesInTrash() {
+        List<NoteDTO> listNoteDTOs = new ArrayList<>();
+        String sqlCommand = "SELECT * FROM " + Database.TABLE_NOTE + " WHERE " +
+                Database.COLUMN_NOTE_IS_IN_TRASH + " = 1";
+        Cursor cursor = mSQLiteDB.rawQuery(sqlCommand, null);
+
+        int idIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_ID);
+        int titleIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TITLE);
+        int dateIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_DATE);
+        int contentIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_CONTENT);
+        int colorIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_COLOR);
+        int modifiedDateIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_MODIFIED_DATE);
+        int favoriteIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_FAVORITE);
+        int priorityIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_PRIORITY);
+        int timeReminderIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_TIME_REMINDER);
+        int reminderIdIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_REMINDER_ID);
+        int isInTrashIndex = cursor.getColumnIndex(Database.COLUMN_NOTE_IS_IN_TRASH);
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(idIndex);
+            String title = cursor.getString(titleIndex);
+            String date = cursor.getString(dateIndex);
+            String content = cursor.getString(contentIndex);
+            String modifiedDate = cursor.getString(modifiedDateIndex);
+            int priority = cursor.getInt(priorityIndex);
+            String color = cursor.getString(colorIndex);
+            int isFavorite = cursor.getInt(favoriteIndex);
+            long timeReminder = cursor.getLong(timeReminderIndex);
+            int reminderId = cursor.getInt(reminderIdIndex);
+            int isInTrash = cursor.getInt(isInTrashIndex);
+
+            NoteDTO newNote = new NoteDTO(id, title, date, content, color, priority, modifiedDate,
+                    isFavorite, timeReminder, reminderId, isInTrash);
 
             listNoteDTOs.add(newNote);
 
@@ -92,9 +160,24 @@ public class NoteDAO {
     public boolean deleteNote(NoteDTO deletedNote) {
         int result = mSQLiteDB.delete(Database.TABLE_NOTE, Database.COLUMN_NOTE_ID + " = " + deletedNote.getId(),
                 null);
-
-
         return result != 0;
+    }
+
+    public boolean emptyTrash() {
+        int result = mSQLiteDB.delete(Database.TABLE_NOTE, Database.COLUMN_NOTE_IS_IN_TRASH + " = 1",
+                null);
+        return result != 0;
+    }
+
+    public void updateToTrash(NoteDTO deletedNote, int trashValue) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(Database.COLUMN_NOTE_IS_IN_TRASH, trashValue);
+
+        mSQLiteDB.update(Database.TABLE_NOTE,
+                contentValues,
+                Database.COLUMN_NOTE_ID + " = " + deletedNote.getId(),
+                null);
     }
 
     public boolean editNote(NoteDTO editedNote) {

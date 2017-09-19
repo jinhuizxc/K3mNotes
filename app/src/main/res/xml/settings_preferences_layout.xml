@@ -6,4 +6,12 @@
         android:summaryOff="@string/night_mode_off_summary"
         android:summaryOn="@string/night_mode_on_summary"
         android:title="@string/night_mode" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_view_mode_entries"
+        android:entryValues="@array/pref_view_mode_entry_value"
+        android:key="@string/view_mode_pref_key"
+        android:summary="%s"
+        android:title="@string/view_mode_title" />
 </PreferenceScreen>
