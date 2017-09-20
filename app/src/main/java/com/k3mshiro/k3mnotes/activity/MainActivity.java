@@ -1,6 +1,7 @@
 package com.k3mshiro.k3mnotes.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,8 +31,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.adapter.ModifiedDateSortedAdapter;
 import com.k3mshiro.k3mnotes.adapter.NoteAdapter;
+import com.k3mshiro.k3mnotes.customview.dialog.ReminderDialog;
 import com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport;
 import com.k3mshiro.k3mnotes.customview.recycleview.VerticalItemSpace;
 import com.k3mshiro.k3mnotes.customview.toasty.Toasty;
@@ -40,24 +43,10 @@ import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, NoteAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NoteAdapter.OnItemClickListener, DialogInterface.OnDismissListener {
 
     private static final String TAG = MainActivity.class.getName();
     private static final int REQUEST_CODE_PERMISSIONS = 100;
-    public static final int VERTICAL_ITEM_SPACE = 30;
-    public static final int REQUEST_CODE_EDIT = 102;
-    public static final int REQUEST_CODE_TRASH = 103;
-    public static final String EDIT_NOTE = "EDIT_NOTE";
-    public static final String THEME_PREFERENCES = "THEME_PREFERENCES";
-    public static final String VIEW_PREFERENCES = "VIEW_PREFERENCES";
-    public static final String RECREATE_ACTIVITY = "RECREATE_ACTIVITY";
-    public static final String THEME_SAVED = "THEME_SAVED";
-    public static final String VIEWMODE_SAVED = "VIEWMODE_SAVED";
-    public static final String DARKTHEME = "DARKTHEME";
-    public static final String LIGHTTHEME = "LIGHTTHEME";
-    public static final String ALLMODE = "ALLMODE";
-    public static final String FAVORITEMODE = "FAVORITEMODE";
-    public static final String REMINDERMODE = "REMINDERMODE";
     private String theme = "name_of_the_theme";
     private String viewMode = "name_of_view_mode";
     private int mTheme = -1;
@@ -80,14 +69,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        if (getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
-            SharedPreferences.Editor editor = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).edit();
-            editor.putBoolean(RECREATE_ACTIVITY, false);
+        if (getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE).getBoolean(ConstantUtil.RECREATE_ACTIVITY, false)) {
+            SharedPreferences.Editor editor = getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE).edit();
+            editor.putBoolean(ConstantUtil.RECREATE_ACTIVITY, false);
             editor.apply();
             recreate();
-        } else if (getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
-            SharedPreferences.Editor editor = getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).edit();
-            editor.putBoolean(RECREATE_ACTIVITY, false);
+        } else if (getSharedPreferences(ConstantUtil.VIEW_PREFERENCES, MODE_PRIVATE).getBoolean(ConstantUtil.RECREATE_ACTIVITY, false)) {
+            SharedPreferences.Editor editor = getSharedPreferences(ConstantUtil.VIEW_PREFERENCES, MODE_PRIVATE).edit();
+            editor.putBoolean(ConstantUtil.RECREATE_ACTIVITY, false);
             editor.apply();
             recreate();
         }
@@ -95,8 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        theme = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getString(THEME_SAVED, LIGHTTHEME);
-        if (theme.equals(LIGHTTHEME)) {
+        theme = getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE)
+                .getString(ConstantUtil.THEME_SAVED, ConstantUtil.LIGHTTHEME);
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             mTheme = R.style.CustomStyle_LightTheme;
         } else {
             mTheme = R.style.CustomStyle_DarkTheme;
@@ -151,12 +141,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         noteDAO.openDatabase();
         mNoteAdapter = new ModifiedDateSortedAdapter(MainActivity.this);
 
-        viewMode = getSharedPreferences(VIEW_PREFERENCES, MODE_PRIVATE).getString(VIEWMODE_SAVED, ALLMODE);
-        if (viewMode.equals(ALLMODE)) {
+        viewMode = getSharedPreferences(ConstantUtil.VIEW_PREFERENCES, MODE_PRIVATE)
+                .getString(ConstantUtil.VIEWMODE_SAVED, ConstantUtil.ALLMODE);
+        if (viewMode.equals(ConstantUtil.ALLMODE)) {
             noteDTOs = noteDAO.getAllNotes(1);
-        } else if (viewMode.equals(FAVORITEMODE)) {
+        } else if (viewMode.equals(ConstantUtil.FAVORITEMODE)) {
             noteDTOs = noteDAO.getAllNotes(2);
-        } else if (viewMode.equals(REMINDERMODE)) {
+        } else if (viewMode.equals(ConstantUtil.REMINDERMODE)) {
             noteDTOs = noteDAO.getAllNotes(3);
         }
 
@@ -184,14 +175,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayoutManager llm = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
         rvList.setLayoutManager(llm);
         rvList.setHasFixedSize(true); // nang cao hieu suat khi cac item cung do rong va chieu cao
-        rvList.addItemDecoration(new VerticalItemSpace(VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
+        rvList.addItemDecoration(new VerticalItemSpace(ConstantUtil.VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fabNewNote = (FloatingActionButton) findViewById(R.id.fab_new_note);
         fabNewAlarm = (FloatingActionButton) findViewById(R.id.fab_new_alarm);
         fabNewPhoto = (FloatingActionButton) findViewById(R.id.fab_new_photo);
 
-        if (theme.equals(MainActivity.DARKTHEME)) {
+        if (theme.equals(ConstantUtil.DARKTHEME)) {
             listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
         } else {
             listToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
@@ -254,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.item_trash:
                 Intent intentTrash = new Intent(MainActivity.this, TrashActivity.class);
-                startActivityForResult(intentTrash, REQUEST_CODE_TRASH);
+                startActivityForResult(intentTrash, ConstantUtil.REQUEST_CODE_TRASH);
                 break;
 
             default:
@@ -267,18 +258,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_EDIT:
-                if (resultCode == BaseEditActivity.RESULT_CODE_SUCCESS) {
+            case ConstantUtil.REQUEST_CODE_EDIT:
+                if (resultCode == ConstantUtil.RESULT_CODE_SUCCESS) {
                     mNoteAdapter.updateItemAt(editPos, editedNote);
-                } else if (resultCode == BaseEditActivity.RESULT_CODE_DELETE) {
+                } else if (resultCode == ConstantUtil.RESULT_CODE_DELETE) {
                     mNoteAdapter.remove(editedNote);
-                    noteDAO.deleteNote(editedNote);
                     noteDAO.updateToTrash(editedNote, 1);
                     Toasty.success(this, "Delete Successfully!", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
-            case REQUEST_CODE_TRASH:
+            case ConstantUtil.REQUEST_CODE_TRASH:
                 if (resultCode == TrashActivity.RESULT_CODE_PUTBACK) {
                     mNoteAdapter.notifyDataSetChanged();
                 }
@@ -313,7 +303,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_new_alarm:
-                Toast.makeText(this, "New alarm click", Toast.LENGTH_SHORT).show();
+                ReminderDialog reminderDialog = new ReminderDialog(this);
+                reminderDialog.show();
+                reminderDialog.setOnDismissListener(this);
                 returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
@@ -337,14 +329,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editPos = position;
         editedNote = mNoteAdapter.get(position);
         Intent intentEdit = new Intent(MainActivity.this, EditNoteActivity.class);
-        intentEdit.putExtra(EDIT_NOTE, editedNote);
-        startActivityForResult(intentEdit, MainActivity.REQUEST_CODE_EDIT);
+        intentEdit.putExtra(ConstantUtil.EDIT_NOTE, editedNote);
+        startActivityForResult(intentEdit, ConstantUtil.REQUEST_CODE_EDIT);
     }
 
     private void deleteNote(int position) {
         deletedNote = mNoteAdapter.get(position);
         mNoteAdapter.remove(deletedNote);
-        Snackbar snackbar = Snackbar.make(rltListNote, "1 item has been deleted", Snackbar.LENGTH_SHORT)
+        Snackbar snackbar = Snackbar.make(rltListNote, "1 note was deleted", Snackbar.LENGTH_SHORT)
                 .setAction("Undo", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -364,10 +356,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         View sbView = snackbar.getView();
         TextView sbText = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-        if (theme.equals(LIGHTTHEME)) {
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
             sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
-        } else if (theme.equals(DARKTHEME)) {
+        } else if (theme.equals(ConstantUtil.DARKTHEME)) {
             sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
             sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
         }
@@ -450,5 +442,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         goToW();
         goToNW();
         goToN();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        mNoteAdapter.notifyDataSetChanged();
+        recreate();
     }
 }

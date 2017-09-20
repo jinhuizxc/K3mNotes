@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 
 
 public class AboutActivity extends AppCompatActivity {
@@ -26,8 +27,9 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        theme = getSharedPreferences(MainActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
-        if (theme.equals(MainActivity.LIGHTTHEME)) {
+        theme = getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE)
+                .getString(ConstantUtil.THEME_SAVED, ConstantUtil.LIGHTTHEME);
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             setTheme(R.style.CustomStyle_LightTheme);
         } else {
             setTheme(R.style.CustomStyle_DarkTheme);
@@ -43,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
 
         final Drawable backArrow = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_white_24dp);
         if (backArrow != null) {
-            if (theme.equals(MainActivity.DARKTHEME)) {
+            if (theme.equals(ConstantUtil.DARKTHEME)) {
                 backArrow.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey300), PorterDuff.Mode.SRC_ATOP);
             } else {
                 backArrow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
@@ -73,7 +75,7 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (theme.equals(MainActivity.DARKTHEME)) {
+        if (theme.equals(ConstantUtil.DARKTHEME)) {
             aboutToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
         } else {
             aboutToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));

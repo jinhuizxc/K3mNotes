@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.adapter.ReminderAdapter;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
@@ -34,7 +35,7 @@ public class EditNoteActivity extends BaseEditActivity {
 
     private void getNoteDatas() {
         Intent intent = getIntent();
-        editedNote = (NoteDTO) intent.getSerializableExtra(MainActivity.EDIT_NOTE);
+        editedNote = (NoteDTO) intent.getSerializableExtra(ConstantUtil.EDIT_NOTE);
         edtTitle.setText(editedNote.getTitle());
         parseColor = editedNote.getColor();
         edtTitle.setTextColor(Color.parseColor(parseColor));
@@ -85,7 +86,7 @@ public class EditNoteActivity extends BaseEditActivity {
         }
 
         if (timeInMillis > 0) {
-            String timeText = "Time set for " + getCurrentDateTime(timeInMillis);
+            String timeText = "Time set for " + ConstantUtil.getCurrentDateTime(timeInMillis);
             tvTimeInfo.setText(timeText);
         }
     }
@@ -114,7 +115,7 @@ public class EditNoteActivity extends BaseEditActivity {
                 builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        setResult(RESULT_CODE_DELETE);
+                        setResult(ConstantUtil.RESULT_CODE_DELETE);
                         finish();
                     }
                 });
@@ -153,14 +154,14 @@ public class EditNoteActivity extends BaseEditActivity {
         } else {
             editedNote.setTitle(newTitle);
             editedNote.setContent(newContent);
-            editedNote.setModifiedDate(getCurrentDateTime());
+            editedNote.setModifiedDate(ConstantUtil.getCurrentDateTime());
             editedNote.setColor(newColor);
             editedNote.setPriority(newPriority);
             editedNote.setFavoriteValue(newFavorValue);
             editedNote.setTimeReminder(newTimeReminder);
             boolean result = noteDAO.editNote(editedNote);
             if (result) {
-                setResult(BaseEditActivity.RESULT_CODE_SUCCESS);
+                setResult(ConstantUtil.RESULT_CODE_SUCCESS);
                 if (timeInMillis > 0 && editedNote.getTimeReminder() != currentTimeMillis) {
                     ReminderAdapter reminderAdapter = new ReminderAdapter(getApplicationContext(),
                             reminderId, timeInMillis, editedNote.getTitle(), editedNote.getContent());
@@ -171,7 +172,7 @@ public class EditNoteActivity extends BaseEditActivity {
                     reminderAdapter.unregisterReminder();
                 }
             } else {
-                setResult(BaseEditActivity.RESULT_CODE_FAILURE);
+                setResult(ConstantUtil.RESULT_CODE_FAILURE);
             }
         }
     }
@@ -180,11 +181,11 @@ public class EditNoteActivity extends BaseEditActivity {
         infoFragment = new DrawerInfoFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putString(DrawerInfoFragment.KEY_MODIFIED_DATE, editedNote.getModifiedDate());
-        bundle.putString(DrawerInfoFragment.KEY_CREATED_DATE, editedNote.getDate());
-        bundle.putString(DrawerInfoFragment.KEY_COLOR, editedNote.getColor());
-        bundle.putInt(DrawerInfoFragment.KEY_PRIORITY, editedNote.getPriority());
-        bundle.putString(DrawerInfoFragment.KEY_THEME, theme);
+        bundle.putString(ConstantUtil.KEY_MODIFIED_DATE, editedNote.getModifiedDate());
+        bundle.putString(ConstantUtil.KEY_CREATED_DATE, editedNote.getDate());
+        bundle.putString(ConstantUtil.KEY_COLOR, editedNote.getColor());
+        bundle.putInt(ConstantUtil.KEY_PRIORITY, editedNote.getPriority());
+        bundle.putString(ConstantUtil.KEY_THEME, theme);
         infoFragment.setArguments(bundle);
 
         FragmentManager fragmentManager = getFragmentManager();

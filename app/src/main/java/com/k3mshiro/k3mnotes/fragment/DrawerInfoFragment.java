@@ -14,15 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.activity.MainActivity;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 
 public class DrawerInfoFragment extends Fragment implements View.OnClickListener {
-    public static final String KEY_CREATED_DATE = "KEY_CREATED_DATE";
-    public static final String KEY_MODIFIED_DATE = "KEY_MODIFIED_DATE";
-    public static final String KEY_PRIORITY = "KEY_PRIORITY";
-    public static final String KEY_COLOR = "KEY_COLOR";
-    public static final String KEY_THEME = "KEY_THEME";
-
     private View view;
     private LinearLayout linearLayout;
     private TextView tvCreatedDate, tvModifiedDate, tvPriority;
@@ -44,11 +38,11 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
 
     private void getDatas() {
         Bundle bundle = getArguments();
-        createdDate = bundle.getString(KEY_CREATED_DATE, "");
-        modifiedDate = bundle.getString(KEY_MODIFIED_DATE, "");
-        parseColor = bundle.getString(KEY_COLOR, "#4CAF50");
-        priority = bundle.getInt(KEY_PRIORITY, 0);
-        fragmentTheme = bundle.getString(KEY_THEME);
+        createdDate = bundle.getString(ConstantUtil.KEY_CREATED_DATE, "");
+        modifiedDate = bundle.getString(ConstantUtil.KEY_MODIFIED_DATE, "");
+        parseColor = bundle.getString(ConstantUtil.KEY_COLOR, "#4CAF50");
+        priority = bundle.getInt(ConstantUtil.KEY_PRIORITY, 0);
+        fragmentTheme = bundle.getString(ConstantUtil.KEY_THEME);
     }
 
     private void initViews() {
@@ -103,7 +97,7 @@ public class DrawerInfoFragment extends Fragment implements View.OnClickListener
                 break;
         }
 
-        if (fragmentTheme.equals(MainActivity.DARKTHEME)) {
+        if (fragmentTheme.equals(ConstantUtil.DARKTHEME)) {
             linearLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.blue_grey_500));
             btnHide.setBackgroundResource(R.drawable.ic_arrow_back_white_24dp);
         } else {

@@ -422,3 +422,8 @@ td,
 th {
   padding: 0;
 }
+
+img.resize {
+  max-width:100%;
+  max-height:height*(width/max-width);
+}

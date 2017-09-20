@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.adapter.ModifiedDateSortedAdapter;
 import com.k3mshiro.k3mnotes.adapter.NoteAdapter;
 import com.k3mshiro.k3mnotes.customview.recycleview.RecyclerViewEmptySupport;
@@ -50,8 +51,9 @@ public class TrashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        theme = getSharedPreferences(MainActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
-        if (theme.equals(MainActivity.LIGHTTHEME)) {
+        theme = getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE)
+                .getString(ConstantUtil.THEME_SAVED, ConstantUtil.LIGHTTHEME);
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             setTheme(R.style.CustomStyle_LightTheme);
         } else {
             setTheme(R.style.CustomStyle_DarkTheme);
@@ -79,7 +81,7 @@ public class TrashActivity extends AppCompatActivity {
 
         final Drawable backArrow = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_back_white_24dp);
         if (backArrow != null) {
-            if (theme.equals(MainActivity.DARKTHEME)) {
+            if (theme.equals(ConstantUtil.DARKTHEME)) {
                 backArrow.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey300), PorterDuff.Mode.SRC_ATOP);
             } else {
                 backArrow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
@@ -103,9 +105,9 @@ public class TrashActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(TrashActivity.this, LinearLayoutManager.VERTICAL, false);
         rvList.setLayoutManager(llm);
         rvList.setHasFixedSize(true); // nang cao hieu suat khi cac item cung do rong va chieu cao
-        rvList.addItemDecoration(new VerticalItemSpace(MainActivity.VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
+        rvList.addItemDecoration(new VerticalItemSpace(ConstantUtil.VERTICAL_ITEM_SPACE));//add ItemDecoration - them khoang cach
 
-        if (theme.equals(MainActivity.DARKTHEME)) {
+        if (theme.equals(ConstantUtil.DARKTHEME)) {
             trashToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_500));
         } else {
             trashToolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
@@ -157,13 +159,13 @@ public class TrashActivity extends AppCompatActivity {
                         mTrashAdapter.remove(deletedNote);
                         noteDAO.updateToTrash(deletedNote, 0);
 
-                        Snackbar snackbar = Snackbar.make(rltListTrash, "1 note has been restored", Snackbar.LENGTH_SHORT);
+                        Snackbar snackbar = Snackbar.make(rltListTrash, "1 note was restored", Snackbar.LENGTH_SHORT);
                         View sbView = snackbar.getView();
                         TextView sbText = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                        if (theme.equals(MainActivity.LIGHTTHEME)) {
+                        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
                             sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
                             sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
-                        } else if (theme.equals(MainActivity.LIGHTTHEME)) {
+                        } else if (theme.equals(ConstantUtil.LIGHTTHEME)) {
                             sbView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primary_lightest));
                             sbText.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_800));
                         }
@@ -218,7 +220,7 @@ public class TrashActivity extends AppCompatActivity {
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        Toasty.success(TrashActivity.this, "All notes has been deleted!", Toast.LENGTH_SHORT).show();
+                        Toasty.success(TrashActivity.this, "All notes were deleted!", Toast.LENGTH_SHORT).show();
                     }
                 });
                 builder.create();

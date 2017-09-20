@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -20,10 +19,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-/**
- * Created by k3mshiro on 9/3/17.
- */
 
 public class RichEditor extends WebView {
     public enum Type {
@@ -295,33 +290,11 @@ public class RichEditor extends WebView {
         exec("javascript:RE.setUnderline();");
     }
 
-    public void setTextColor(int color) {
-        exec("javascript:RE.prepareInsert();");
-
-        String hex = convertHexColorString(color);
-        exec("javascript:RE.setTextColor('" + hex + "');");
-    }
-
     public void setTextBackgroundColor(int color) {
         exec("javascript:RE.prepareInsert();");
 
         String hex = convertHexColorString(color);
         exec("javascript:RE.setTextBackgroundColor('" + hex + "');");
-    }
-
-    public void setFontSize(int fontSize) {
-        if (fontSize > 7 || fontSize < 1) {
-            Log.e("RichEditor", "Font size should have a value between 1-7");
-        }
-        exec("javascript:RE.setFontSize('" + fontSize + "');");
-    }
-
-    public void removeFormat() {
-        exec("javascript:RE.removeFormat();");
-    }
-
-    public void setHeading(int heading) {
-        exec("javascript:RE.setHeading('" + heading + "');");
     }
 
     public void setIndent() {
@@ -332,22 +305,6 @@ public class RichEditor extends WebView {
         exec("javascript:RE.setOutdent();");
     }
 
-    public void setAlignLeft() {
-        exec("javascript:RE.setJustifyLeft();");
-    }
-
-    public void setAlignCenter() {
-        exec("javascript:RE.setJustifyCenter();");
-    }
-
-    public void setAlignRight() {
-        exec("javascript:RE.setJustifyRight();");
-    }
-
-    public void setBlockquote() {
-        exec("javascript:RE.setBlockquote();");
-    }
-
     public void setBullets() {
         exec("javascript:RE.setBullets();");
     }
@@ -356,9 +313,11 @@ public class RichEditor extends WebView {
         exec("javascript:RE.setNumbers();");
     }
 
-    public void insertImage(String url, String alt) {
+    public void insertImage(String imagePath) {
+        String realPath = "file://" + imagePath;
+        String html = "<img class=\"resize\" src=\"" + realPath + "\"></br>";
         exec("javascript:RE.prepareInsert();");
-        exec("javascript:RE.insertImage('" + url + "', '" + alt + "');");
+        exec("javascript:RE.insertImage('" + html + "');");
     }
 
     public void insertLink(String href, String title) {

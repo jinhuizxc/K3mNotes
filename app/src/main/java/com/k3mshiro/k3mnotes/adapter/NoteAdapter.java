@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
-import com.k3mshiro.k3mnotes.activity.MainActivity;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
 import java.text.DateFormat;
@@ -41,7 +41,8 @@ public abstract class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteV
     public NoteAdapter(Context mContext) {
         this.mContext = mContext;
         mLayoutInflater = LayoutInflater.from(mContext);
-        theme = mContext.getSharedPreferences(MainActivity.THEME_PREFERENCES, Context.MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
+        theme = mContext.getSharedPreferences(ConstantUtil.THEME_PREFERENCES, Context.MODE_PRIVATE)
+                .getString(ConstantUtil.THEME_SAVED, ConstantUtil.LIGHTTHEME);
     }
 
     @Override
@@ -68,7 +69,7 @@ public abstract class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteV
         if (note.getTimeReminder() > 0) {
             holder.ivReminderIcon.setVisibility(View.VISIBLE);
         }
-        if (theme.equals(MainActivity.LIGHTTHEME)) {
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             holder.ivFavoriteIcon.setBackgroundResource(R.drawable.amber_triangle_drawable);
             holder.ivReminderIcon.setBackgroundResource(R.drawable.ic_alarm_on_amber_a700_24dp);
         } else {

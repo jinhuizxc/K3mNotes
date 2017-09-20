@@ -57,4 +57,11 @@
     <string name="view_mode_favorite">Favorite</string>
     <string name="view_mode_reminder">Reminder</string>
     <string name="empty_trash_title">Empty Trash</string>
+    <string name="iv_insert_image">insert_image</string>
+    <string name="menu_list_password">Password</string>
+
+    <string name="pass_mode">Password</string>
+    <string name="pass_mode_on_summary">Password is on</string>
+    <string name="pass_mode_off_summary">Password is off</string>
+    <string name="pass_code_title">Passcode</string>
 </resources>

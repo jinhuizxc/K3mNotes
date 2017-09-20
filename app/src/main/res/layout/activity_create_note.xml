@@ -15,15 +15,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/create_toolbar" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_edit_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_create_white_48dp" />
-
 </RelativeLayout>

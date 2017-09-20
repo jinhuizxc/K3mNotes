@@ -2,5 +2,7 @@
 <resources>
     <string name="night_mode_pref_key" translatable="false">NightModePreference</string>
     <string name="view_mode_pref_key" translatable="false">ViewModePreference</string>
+    <string name="pass_mode_pref_key" translatable="false">PassModePreference</string>
+    <string name="pass_code_pref_key" translatable="false">PassCodePreference</string>
 
 </resources>

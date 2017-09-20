@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.adapter.ReminderAdapter;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 import com.k3mshiro.k3mnotes.fragment.DrawerInfoFragment;
@@ -18,19 +19,6 @@ import java.util.Random;
 public class CreateNoteActivity extends BaseEditActivity {
 
     private static final String TAG = CreateNoteActivity.class.getName();
-    private static final String NULL_HTML_CODE = "<!DOCTYPE html>\n" +
-            "<html>\n" +
-            "<head>\n" +
-            "    <meta name=\"viewport\" content=\"user-scalable=no\">\n" +
-            "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
-            "    <link rel=\"stylesheet\" type=\"text/css\" href=\"normalize.css\">\n" +
-            "    <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">\n" +
-            "</head>\n" +
-            "<body>\n" +
-            "<div id=\"editor\" contenteditable=\"true\"></div>\n" +
-            "<script type=\"text/javascript\" src=\"rich_editor.js\"></script>\n" +
-            "</body>\n" +
-            "</html>\n";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,11 +37,11 @@ public class CreateNoteActivity extends BaseEditActivity {
         infoFragment = new DrawerInfoFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putString(DrawerInfoFragment.KEY_MODIFIED_DATE, null);
-        bundle.putString(DrawerInfoFragment.KEY_CREATED_DATE, null);
-        bundle.putString(DrawerInfoFragment.KEY_COLOR, parseColor);
-        bundle.putInt(DrawerInfoFragment.KEY_PRIORITY, priority);
-        bundle.putString(DrawerInfoFragment.KEY_THEME, theme);
+        bundle.putString(ConstantUtil.KEY_MODIFIED_DATE, null);
+        bundle.putString(ConstantUtil.KEY_CREATED_DATE, null);
+        bundle.putString(ConstantUtil.KEY_COLOR, parseColor);
+        bundle.putInt(ConstantUtil.KEY_PRIORITY, priority);
+        bundle.putString(ConstantUtil.KEY_THEME, theme);
         infoFragment.setArguments(bundle);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -91,12 +79,12 @@ public class CreateNoteActivity extends BaseEditActivity {
         String title = edtTitle.getText().toString();
         String content;
         if (redtContent.getHtml() == null) {
-            content = NULL_HTML_CODE;
+            content = ConstantUtil.NULL_HTML;
         } else {
             content = redtContent.getHtml();
         }
-        String date = getCurrentDateTime();
-        String modifiedDate = getCurrentDateTime();
+        String date = ConstantUtil.getCurrentDateTime();
+        String modifiedDate = ConstantUtil.getCurrentDateTime();
         NoteDTO newNote = new NoteDTO(title, date, content, parseColor, priority, modifiedDate,
                 favorValue, timeInMillis, reminderId);
 

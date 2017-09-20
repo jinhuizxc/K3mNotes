@@ -54,6 +54,27 @@
                 android:src="@drawable/ic_format_strikethrough_grey_300_24dp" />
 
             <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setSupScript"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/subscript" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setSuperScript"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/superscript" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
+                android:id="@+id/iv_setTextBackgroundColor"
+                android:layout_width="56dp"
+                android:background="@color/blue_grey_800"
+                android:padding="16dp"
+                android:src="@drawable/ic_format_color_text_white_24dp" />
+
+            <com.k3mshiro.k3mnotes.customview.SquareImageView
                 android:id="@+id/iv_insertBullet"
                 android:layout_width="56dp"
                 android:background="@color/blue_grey_800"

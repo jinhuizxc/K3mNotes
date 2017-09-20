@@ -1,19 +1,19 @@
 package com.k3mshiro.k3mnotes.activity;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.k3mshiro.k3mnotes.R;
+import com.k3mshiro.k3mnotes.aconstant.ConstantUtil;
 import com.k3mshiro.k3mnotes.customview.SquareButton;
 import com.k3mshiro.k3mnotes.customview.SquareImageView;
 import com.k3mshiro.k3mnotes.customview.dialog.ColorSetDialog;
@@ -31,24 +32,17 @@ import com.k3mshiro.k3mnotes.customview.richeditor.RichEditor;
 import com.k3mshiro.k3mnotes.dao.NoteDAO;
 import com.k3mshiro.k3mnotes.dto.NoteDTO;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
 public abstract class BaseEditActivity extends AppCompatActivity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, ColorSetDialog.OnCallBack, PrioritySetDialog.OnCallBack, ReminderPopup.OnPopupSendCalendarToActivity {
-    public static final int RESULT_CODE_SUCCESS = 1000;
-    public static final int RESULT_CODE_DELETE = 1002;
-    public static final int RESULT_CODE_FAILURE = 1001;
+    private static final int REQUEST_OPEN_GALLERY = 4;
 
     protected View editSide, formatBar;
     protected Button btnPrioritySet;
     protected SquareButton btnAlarmSet, btnInfoLook;
     protected SquareImageView ivColorSet, ivUndo, ivRedo, ivBold, ivItalic, ivUnderline, ivStrike,
-            ivBullets, ivNumbers, ivIndent, ivOutdent, ivCbAdd;
-    protected ImageView ivTextFormat;
-    protected FloatingActionButton fabEditNote;
+            ivBullets, ivNumbers, ivIndent, ivOutdent, ivCbAdd, ivSetSubScript,
+            ivSetSuperScript, ivSetTextBGColor;
+    protected ImageView ivTextFormat, ivInsertImage;
     protected EditText edtTitle;
     protected RichEditor redtContent;
     protected Toolbar createToolbar;
@@ -67,11 +61,13 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
     protected int favorValue = 0;
     protected long timeInMillis = 0;
     protected int reminderId;
+    protected String imagePath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        theme = getSharedPreferences(MainActivity.THEME_PREFERENCES, MODE_PRIVATE).getString(MainActivity.THEME_SAVED, MainActivity.LIGHTTHEME);
-        if (theme.equals(MainActivity.LIGHTTHEME)) {
+        theme = getSharedPreferences(ConstantUtil.THEME_PREFERENCES, MODE_PRIVATE)
+                .getString(ConstantUtil.THEME_SAVED, ConstantUtil.LIGHTTHEME);
+        if (theme.equals(ConstantUtil.LIGHTTHEME)) {
             setTheme(R.style.CustomStyle_LightTheme);
         } else {
             setTheme(R.style.CustomStyle_DarkTheme);
@@ -92,7 +88,7 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
 
         final Drawable check = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_check_white_24dp);
         if (check != null) {
-            if (theme.equals(MainActivity.DARKTHEME)) {
+            if (theme.equals(ConstantUtil.DARKTHEME)) {
                 check.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.cyan_600), PorterDuff.Mode.SRC_ATOP);
             } else {
                 check.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
@@ -126,11 +122,15 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
         ivColorSet.setOnClickListener(this);
 
         ivTextFormat = (ImageView) createToolbar.findViewById(R.id.iv_textFormat);
-        if (theme.equals(MainActivity.DARKTHEME)) {
+        if (theme.equals(ConstantUtil.DARKTHEME)) {
             ivTextFormat.setBackgroundResource(R.drawable.lv_text_format_dark);
         }
         ivTextFormat.setVisibility(View.VISIBLE);
         ivTextFormat.setOnClickListener(this);
+
+        ivInsertImage = (ImageView) createToolbar.findViewById(R.id.iv_insertImage);
+        ivInsertImage.setVisibility(View.VISIBLE);
+        ivInsertImage.setOnClickListener(this);
 
         edtTitle = (EditText) editSide.findViewById(R.id.edt_note_title);
         edtTitle.setTextColor(Color.parseColor(parseColor));
@@ -144,9 +144,6 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
         redtContent.setPlaceholder("What do you thinking about....");
 
         tvTimeInfo = (TextView) editSide.findViewById(R.id.tv_timeInfo);
-
-        fabEditNote = (FloatingActionButton) findViewById(R.id.fab_edit_note);
-        fabEditNote.setOnClickListener(this);
     }
 
     private void initColorBar() {
@@ -185,6 +182,9 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
         ivIndent = (SquareImageView) editSide.findViewById(R.id.iv_setIndent);
         ivOutdent = (SquareImageView) editSide.findViewById(R.id.iv_setOutdent);
         ivCbAdd = (SquareImageView) editSide.findViewById(R.id.iv_insertCheckbox);
+        ivSetSubScript = (SquareImageView) editSide.findViewById(R.id.iv_setSupScript);
+        ivSetSuperScript = (SquareImageView) editSide.findViewById(R.id.iv_setSuperScript);
+        ivSetTextBGColor = (SquareImageView) editSide.findViewById(R.id.iv_setTextBackgroundColor);
 
         ivUndo.setOnClickListener(this);
         ivRedo.setOnClickListener(this);
@@ -197,6 +197,9 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
         ivIndent.setOnClickListener(this);
         ivOutdent.setOnClickListener(this);
         ivCbAdd.setOnClickListener(this);
+        ivSetSubScript.setOnClickListener(this);
+        ivSetSuperScript.setOnClickListener(this);
+        ivSetTextBGColor.setOnClickListener(this);
     }
 
     private void initNotes() {
@@ -212,12 +215,6 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fab_edit_note:
-                redtContent.requestFocus();
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(BaseEditActivity.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(redtContent, InputMethodManager.SHOW_IMPLICIT);
-                break;
-
             case R.id.btn_alarm_set:
                 showReminderPopup();
                 break;
@@ -284,10 +281,32 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
                 redtContent.insertTodo();
                 break;
 
+            case R.id.iv_setSupScript:
+                redtContent.setSubscript();
+                break;
+
+            case R.id.iv_setSuperScript:
+                redtContent.setSuperscript();
+                break;
+
+            case R.id.iv_setTextBackgroundColor:
+                redtContent.setTextBackgroundColor(Color.YELLOW);
+                break;
+
+            case R.id.iv_insertImage:
+                selectImageFromGalery();
+                break;
+
             default:
                 break;
         }
 
+    }
+
+    private void selectImageFromGalery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_OPEN_GALLERY);
     }
 
     private void showReminderPopup() {
@@ -308,6 +327,14 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
 
     private void hideTextFormatBar() {
         formatBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            imagePath = ConstantUtil.getRealPathFromURI_API19(this, data.getData());
+            redtContent.insertImage(imagePath);
+        }
     }
 
     @Override
@@ -355,7 +382,7 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
         //get calendar from ReminderPopup
         this.timeInMillis = timeInMillis;
         if (timeInMillis > 0) {
-            String timeText = "Time set for " + getCurrentDateTime(timeInMillis);
+            String timeText = "Time set for " + ConstantUtil.getCurrentDateTime(timeInMillis);
             tvTimeInfo.setText(timeText);
         } else {
             tvTimeInfo.setText("");
@@ -366,19 +393,5 @@ public abstract class BaseEditActivity extends AppCompatActivity implements View
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-    }
-
-    protected String getCurrentDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
-
-    protected String getCurrentDateTime(long timeInMillis) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeInMillis);
-        return dateFormat.format(calendar.getTime());
     }
 }
