@@ -5,8 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -101,12 +103,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
                 initializeComponents();
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.CAMERA},
                         REQUEST_CODE_PERMISSIONS);
             }
         } else {
@@ -120,7 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
             initializeComponents();
         } else {
             Toast.makeText(this,
@@ -255,30 +261,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ConstantUtil.REQUEST_CODE_EDIT:
-                if (resultCode == ConstantUtil.RESULT_CODE_SUCCESS) {
-                    mNoteAdapter.updateItemAt(editPos, editedNote);
-                } else if (resultCode == ConstantUtil.RESULT_CODE_DELETE) {
-                    mNoteAdapter.remove(editedNote);
-                    noteDAO.updateToTrash(editedNote, 1);
-                    Toasty.success(this, "Delete Successfully!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-            case ConstantUtil.REQUEST_CODE_TRASH:
-                if (resultCode == TrashActivity.RESULT_CODE_PUTBACK) {
-                    mNoteAdapter.notifyDataSetChanged();
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
     public void onItemClick(View itemView, int position) {
         editNote(position);
     }
@@ -298,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.fab_new_note:
                 showCreateNoteScreen();
-                returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
 
@@ -306,14 +287,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ReminderDialog reminderDialog = new ReminderDialog(this);
                 reminderDialog.show();
                 reminderDialog.setOnDismissListener(this);
-                returnAllFAB();
                 isFloatingActionButtonShow = false;
                 break;
 
             case R.id.fab_new_photo:
-                Toast.makeText(this, "New photo click", Toast.LENGTH_SHORT).show();
+                takeSnapshot();
                 returnAllFAB();
                 isFloatingActionButtonShow = false;
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ConstantUtil.REQUEST_CODE_EDIT:
+                if (resultCode == ConstantUtil.RESULT_CODE_SUCCESS) {
+                    mNoteAdapter.updateItemAt(editPos, editedNote);
+                } else if (resultCode == ConstantUtil.RESULT_CODE_DELETE) {
+                    mNoteAdapter.remove(editedNote);
+                    noteDAO.updateToTrash(editedNote, 1);
+                    Toasty.success(this, "Delete Successfully!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case ConstantUtil.REQUEST_CODE_TRASH:
+                if (resultCode == TrashActivity.RESULT_CODE_PUTBACK) {
+                    mNoteAdapter.notifyDataSetChanged();
+                }
+                break;
+
+            case ConstantUtil.REQUEST_OPEN_CAMERA:
+                if (resultCode == RESULT_OK) {
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    String snapshotHtml = ConstantUtil.getSnapshotPath(bitmap);
+                    Intent intent = new Intent(MainActivity.this, SnapshotNoteActivity.class);
+                    intent.putExtra(ConstantUtil.SNAPSHOT, snapshotHtml);
+                    startActivity(intent);
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toasty.info(this, "Action canceled", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toasty.error(this, "Action Failed", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
                 break;
         }
     }
@@ -366,6 +384,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         snackbar.show();
     }
+
+    private void takeSnapshot() {
+        if (getApplicationContext().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA)) {
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(intent, ConstantUtil.REQUEST_OPEN_CAMERA);
+        } else {
+            Toasty.error(getApplication(), "Camera is unsupported!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     /***************** Animation Setting **********************************/
     private void showAllFloatingActionButon() {

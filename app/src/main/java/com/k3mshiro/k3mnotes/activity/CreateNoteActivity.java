@@ -79,7 +79,7 @@ public class CreateNoteActivity extends BaseEditActivity {
         String title = edtTitle.getText().toString();
         String content;
         if (redtContent.getHtml() == null) {
-            content = ConstantUtil.NULL_HTML;
+            content = ConstantUtil.convertStringToHtml(null);
         } else {
             content = redtContent.getHtml();
         }
